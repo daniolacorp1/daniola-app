@@ -27,8 +27,8 @@ import SupplierProfile from "./pages/supplier-profile";
 
 function App() {
   // Simple auth check - in a real app, this would be more robust
-  const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
-  // const isAuthenticated = true;
+  // const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
+  const isAuthenticated = true;
 
   return (
     <Router>
