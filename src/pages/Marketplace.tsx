@@ -1,0 +1,90 @@
+import { ShoppingCart } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { BottomNav } from "@/components/BottomNav";
+import { ListingCard } from "@/components/marketplace/ListingCard";
+import { SearchFilters } from "@/components/marketplace/SearchFilters";
+import { ListingDetails } from "@/components/marketplace/ListingDetails";
+import { commodities } from "@/data/commodities";
+import { Commodity } from "@/types/marketplace";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { MainHeader } from "@/components/MainHeader";
+
+const Marketplace = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState("All");
+  const [selectedListing, setSelectedListing] = useState<Commodity | null>(
+    null
+  );
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const filteredCommodities = commodities.filter((commodity) => {
+    const matchesSearch =
+      commodity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      commodity.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      commodity.supplier.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesFilter =
+      selectedFilter === "All" || commodity.name.includes(selectedFilter);
+
+    return matchesSearch && matchesFilter;
+  });
+
+  const handleViewDetails = (commodity: Commodity) => {
+    setSelectedListing(commodity);
+  };
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      {/* <MainHeader /> */}
+      <div className="top-[60px] bg-background z-20">
+        <div className="flex justify-between items-start py-4">
+          <h1 className="text-2xl font-bold text-foreground">Commodities</h1>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            onClick={() => navigate("/saved")}
+          >
+            <ShoppingCart className="h-6 w-6" />
+            <span className="absolute -top-1 -right-1 bg-primary text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
+              0
+            </span>
+          </Button>
+        </div>
+        <div className="pb-4 bg-background">
+          <SearchFilters
+            searchQuery={searchQuery}
+            selectedFilter={selectedFilter}
+            onSearchChange={setSearchQuery}
+            onFilterChange={setSelectedFilter}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4 py-2">
+        {filteredCommodities.map((commodity) => (
+          <ListingCard
+            key={commodity.id}
+            commodity={commodity}
+            onViewDetails={handleViewDetails}
+            onSave={() => {}}
+          />
+        ))}
+      </div>
+
+      <ListingDetails
+        listing={selectedListing}
+        onClose={() => setSelectedListing(null)}
+        onSave={() => {}}
+        onCreateDeal={() => {}}
+        onContactSupplier={() => {}}
+      />
+      <BottomNav />
+    </div>
+  );
+};
+
+export default Marketplace;
