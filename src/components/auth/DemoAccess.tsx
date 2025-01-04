@@ -9,7 +9,8 @@ import {
 import { ChevronDown } from "lucide-react";
 
 interface DemoAccessProps {
-  onDemoLogin: (role: string) => void;
+  onDemoLogin: (role: 'buyer' | 'supplier') => Promise<void>;
+  isLoading: boolean;
 }
 
 export const DemoAccess = ({ onDemoLogin }: DemoAccessProps) => {

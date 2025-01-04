@@ -25,7 +25,8 @@ const formSchema = z.object({
 
 interface AuthFormProps {
   mode: AuthMode;
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
+  onSubmit: (values: AuthFormValues) => Promise<void>;
+  isLoading: boolean;
 }
 
 export const AuthForm = ({ mode, onSubmit }: AuthFormProps) => {
