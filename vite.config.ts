@@ -40,25 +40,22 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  build: {
-    commonjsOptions: {
-      transformMixedEsModules: true,
-    },
-    rollupOptions: {
-      external: [],
-      output: {
-        manualChunks: {
-          'vendor': ['@supabase/supabase-js']
-        }
-      }
     }
   },
   optimizeDeps: {
-    include: ['@supabase/supabase-js'],
-    esbuildOptions: {
-      target: 'es2020'
+    include: ['@supabase/supabase-js']
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'supabase': ['@supabase/supabase-js']
+        }
+      }
     }
   }
 }));
