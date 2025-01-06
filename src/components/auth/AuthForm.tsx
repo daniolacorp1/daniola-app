@@ -60,7 +60,7 @@ const IconInput = ({
 );
 
 // Main Auth Component
-export const AuthPage = () => {
+export const AuthForm = () => {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const [formData, setFormData] = useState<FormData>({
     email: '',
