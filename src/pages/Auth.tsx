@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 
 export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [mode, setMode] = useState<"login" | "signup">("login");
+
 
   const handleSubmit = async (data: {
     email: string;
@@ -88,11 +89,18 @@ export default function Auth() {
       });
     }
   };
-
-  return (
+ return (
     <div className="container mx-auto py-10">
       <Card className="w-full max-w-md mx-auto">
-        <CardContent className="pt-6">
+        <CardHeader>
+          <CardTitle>Daniola</CardTitle>
+          <CardDescription>
+            {mode === "login" 
+              ? "Sign in to your account" 
+              : "Create a new account"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <Tabs value={mode} onValueChange={(value) => setMode(value as "login" | "signup")}>
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="login">Login</TabsTrigger>
