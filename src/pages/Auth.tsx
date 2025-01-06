@@ -31,13 +31,10 @@ export default function Auth() {
           description: "You have successfully logged in.",
         });
         
-        // Navigate based on user role
         navigate('/dashboard');
       } else {
-        // Log the signup attempt
         console.log('Attempting signup with:', { ...data, password: '***' });
 
-        // Signup with Supabase
         const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
@@ -50,9 +47,7 @@ export default function Auth() {
 
         console.log('Signup successful:', signUpData);
 
-        // Only proceed if we have a user
         if (signUpData.user) {
-          // Create profile entry
           const { error: profileError } = await supabase
             .from('profiles')
             .insert([
@@ -74,7 +69,6 @@ export default function Auth() {
             description: "Please check your email to verify your account.",
           });
 
-          // Optionally navigate to a confirmation page
           navigate('/auth/confirm-email');
         }
       }
@@ -91,29 +85,35 @@ export default function Auth() {
   return (
     <div className="container mx-auto py-10">
       <Card className="w-full max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle>Daniola</CardTitle>
-          <CardDescription>
-            {mode === "login" 
-              ? "Sign in to your account" 
-              : "Create a new account"}
-          </CardDescription>
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold">Daniola</CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs value={mode} onValueChange={(value) => setMode(value as "login" | "signup")}>
-            <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
+          <div className="space-y-4">
+            <CardHeader className="px-0">
+              <CardTitle>Welcome</CardTitle>
+              <CardDescription>
+                {mode === "login" 
+                  ? "Sign in to your account" 
+                  : "Create a new account"}
+              </CardDescription>
+            </CardHeader>
 
-            <TabsContent value="login">
-              <AuthForm mode="login" onSubmit={handleSubmit} />
-            </TabsContent>
-            
-            <TabsContent value="signup">
-              <AuthForm mode="signup" onSubmit={handleSubmit} />
-            </TabsContent>
-          </Tabs>
+            <Tabs value={mode} onValueChange={(value) => setMode(value as "login" | "signup")}>
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="login">
+                <AuthForm mode="login" onSubmit={handleSubmit} />
+              </TabsContent>
+              
+              <TabsContent value="signup">
+                <AuthForm mode="signup" onSubmit={handleSubmit} />
+              </TabsContent>
+            </Tabs>
+          </div>
         </CardContent>
       </Card>
     </div>
