@@ -1,20 +1,12 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 
-// Type for form data
+interface AuthFormProps {
+  mode: "login" | "signup";
+  onSubmit: (data: FormData) => void;
+  onModeChange: (mode: "login" | "signup") => void;
+}
+
 interface FormData {
   email: string;
   password: string;
@@ -22,46 +14,7 @@ interface FormData {
   role: 'buyer' | 'miner';
 }
 
-// Component for form fields with icon
-const IconInput = ({ 
-  icon: Icon, 
-  name, 
-  type, 
-  placeholder, 
-  value, 
-  onChange, 
-  error 
-}: { 
-  icon: React.ElementType;
-  name: string;
-  type: string;
-  placeholder?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string;
-}) => (
-  <div className="space-y-1">
-    <label className="text-sm font-medium text-gray-700">
-      {name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-    </label>
-    <div className="relative">
-      <Icon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-      <input
-        name={name}
-        type={type}
-        placeholder={placeholder}
-        className="w-full rounded-md border border-gray-300 pl-10 py-2 focus:border-gray-500 focus:outline-none"
-        value={value}
-        onChange={onChange}
-      />
-    </div>
-    {error && <p className="text-sm text-red-500">{error}</p>}
-  </div>
-);
-
-// Main Auth Component
-export const AuthForm = () => {
-  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+export const AuthForm = ({ mode, onSubmit, onModeChange }: AuthFormProps) => {
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
@@ -73,19 +26,16 @@ export const AuthForm = () => {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address.';
     }
     
-    // Password validation
     if (formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters.';
     }
     
-    // Name validation (only for signup)
-    if (activeTab === "signup" && formData.full_name.length < 2) {
+    if (mode === "signup" && formData.full_name.length < 2) {
       newErrors.full_name = 'Name must be at least 2 characters.';
     }
     
@@ -93,11 +43,10 @@ export const AuthForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log('Form submitted:', formData);
-      // Add your authentication logic here
+      onSubmit(formData);
     }
   };
 
@@ -110,82 +59,110 @@ export const AuthForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>Welcome</CardTitle>
-        <CardDescription>
-          {activeTab === "login" 
-            ? "Sign in to your account" 
-            : "Create a new account"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "signup")}>
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
-          </TabsList>
+    <div className="space-y-6">
+      <div className="flex space-x-2">
+        <button
+          type="button"
+          className={`flex-1 py-2 ${mode === 'login' ? 'bg-gray-100' : 'bg-white'}`}
+          onClick={() => onModeChange("login")}
+        >
+          Login
+        </button>
+        <button
+          type="button"
+          className={`flex-1 py-2 ${mode === 'signup' ? 'bg-gray-100' : 'bg-white'}`}
+          onClick={() => onModeChange("signup")}
+        >
+          Sign Up
+        </button>
+      </div>
 
-          <TabsContent value={activeTab}>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {activeTab === "signup" && (
-                <IconInput
-                  icon={User}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {mode === "signup" && (
+          <>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <input
                   name="full_name"
                   type="text"
                   placeholder="John Doe"
+                  className="w-full rounded-md border border-gray-300 pl-10 py-2 focus:border-gray-500 focus:outline-none"
                   value={formData.full_name}
                   onChange={handleInputChange}
-                  error={errors.full_name}
                 />
+              </div>
+              {errors.full_name && (
+                <p className="text-sm text-red-500">{errors.full_name}</p>
               )}
+            </div>
 
-              <IconInput
-                icon={Mail}
-                name="email"
-                type="email"
-                placeholder="you@example.com"
-                value={formData.email}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                I am a
+              </label>
+              <select
+                name="role"
+                value={formData.role}
                 onChange={handleInputChange}
-                error={errors.email}
-              />
-
-              <IconInput
-                icon={Lock}
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                error={errors.password}
-              />
-
-              {activeTab === "signup" && (
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">
-                    I am a
-                  </label>
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-gray-500 focus:outline-none"
-                  >
-                    <option value="buyer">Buyer</option>
-                    <option value="miner">Miner</option>
-                  </select>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="w-full h-11 bg-[#F2E2E2] hover:bg-[#F2E2E2]/90 rounded-md font-medium"
+                className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-gray-500 focus:outline-none"
               >
-                {activeTab === "login" ? "Sign In" : "Create Account"}
-              </button>
-            </form>
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+                <option value="buyer">Buyer</option>
+                <option value="miner">Miner</option>
+              </select>
+            </div>
+          </>
+        )}
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <input
+              name="email"
+              type="email"
+              placeholder="you@example.com"
+              className="w-full rounded-md border border-gray-300 pl-10 py-2 focus:border-gray-500 focus:outline-none"
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+          </div>
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email}</p>
+          )}
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <input
+              name="password"
+              type="password"
+              className="w-full rounded-md border border-gray-300 pl-10 py-2 focus:border-gray-500 focus:outline-none"
+              value={formData.password}
+              onChange={handleInputChange}
+            />
+          </div>
+          {errors.password && (
+            <p className="text-sm text-red-500">{errors.password}</p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className="w-full h-11 bg-[#F2E2E2] hover:bg-[#F2E2E2]/90 rounded-md font-medium"
+        >
+          {mode === "login" ? "Sign In" : "Create Account"}
+        </button>
+      </form>
+    </div>
   );
 };
