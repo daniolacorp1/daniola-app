@@ -2,10 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { DemoAccess } from "@/components/auth/DemoAccess";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase"; // Make sure you have this import
+import { supabase } from "@/lib/supabase";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -20,7 +19,6 @@ export default function Auth() {
   }) => {
     try {
       if (mode === "login") {
-        // Login with Supabase
         const { data: authData, error } = await supabase.auth.signInWithPassword({
           email: data.email,
           password: data.password,
@@ -33,7 +31,6 @@ export default function Auth() {
           description: "You have successfully logged in.",
         });
       } else {
-        // Signup with Supabase
         const { data: authData, error } = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
@@ -83,10 +80,6 @@ export default function Auth() {
               <AuthForm mode="signup" onSubmit={handleSubmit} />
             </TabsContent>
           </Tabs>
-          
-          <div className="mt-6">
-            <DemoAccess />
-          </div>
         </CardContent>
       </Card>
     </div>
