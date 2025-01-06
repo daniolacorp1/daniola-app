@@ -42,4 +42,23 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+    rollupOptions: {
+      external: [],
+      output: {
+        manualChunks: {
+          'vendor': ['@supabase/supabase-js']
+        }
+      }
+    }
+  },
+  optimizeDeps: {
+    include: ['@supabase/supabase-js'],
+    esbuildOptions: {
+      target: 'es2020'
+    }
+  }
 }));
