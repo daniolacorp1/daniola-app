@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 
@@ -45,8 +44,6 @@ export default function Auth() {
           throw signUpError;
         }
 
-        console.log('Signup successful:', signUpData);
-
         if (signUpData.user) {
           const { error: profileError } = await supabase
             .from('profiles')
@@ -87,33 +84,14 @@ export default function Auth() {
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Daniola</CardTitle>
+          <CardDescription>
+            {mode === "login" 
+              ? "Sign in to your account" 
+              : "Create a new account"}
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <CardHeader className="px-0">
-              <CardTitle>Welcome</CardTitle>
-              <CardDescription>
-                {mode === "login" 
-                  ? "Sign in to your account" 
-                  : "Create a new account"}
-              </CardDescription>
-            </CardHeader>
-
-            <Tabs value={mode} onValueChange={(value) => setMode(value as "login" | "signup")}>
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="login">
-                <AuthForm mode="login" onSubmit={handleSubmit} />
-              </TabsContent>
-              
-              <TabsContent value="signup">
-                <AuthForm mode="signup" onSubmit={handleSubmit} />
-              </TabsContent>
-            </Tabs>
-          </div>
+          <AuthForm mode={mode} onSubmit={handleSubmit} onModeChange={setMode} />
         </CardContent>
       </Card>
     </div>
