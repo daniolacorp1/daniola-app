@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { DemoAccess } from "@/components/auth/DemoAccess";
@@ -29,12 +28,20 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+
     // Check if user is already logged in
     const checkUser = async () => {
+      if (!mounted) return;
       try {
+        const { createClient } = await import('@supabase/supabase-js');
+        
+        const supabaseUrl = 'https://your-supabase-url.supabase.co';
+        const supabaseKey = 'your-anon-key';
+        const supabase = createClient(supabaseUrl, supabaseKey);
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
-        if (session) {
+        if (session && mounted) {
           navigate("/dashboard");
         }
       } catch (error) {
@@ -47,6 +54,7 @@ const Auth = () => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
         if (event === 'SIGNED_IN' && session) {
           setLoading(true);
           try {
@@ -83,25 +91,32 @@ const Auth = () => {
             });
             navigate("/dashboard");
           } catch (error: any) {
-            console.error('Error in auth flow:', error);
-            toast({
-              title: "Error",
-              description: error.message || "An error occurred during sign in. Please try again.",
-              variant: "destructive",
-            });
+            if (mounted) {
+              console.error('Error in auth flow:', error);
+              toast({
+                title: "Error",
+                description: error.message || "An error occurred during sign in. Please try again.",
+                variant: "destructive",
+              });
+            }
           } finally {
-            setLoading(false);
+            if (mounted) {
+              setLoading(false);
+            }
           }
         }
       }
     );
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
 
   const handleSubmit = async (values: AuthFormValues) => {
+    if (loading) return;
+    
     setLoading(true);
     try {
       if (mode === "login") {
@@ -135,7 +150,7 @@ const Auth = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "An unexpected error occurred",
         variant: "destructive",
       });
     } finally {
@@ -194,8 +209,8 @@ const Auth = () => {
               </div>
               <DemoAccess onDemoLogin={handleDemoLogin} isLoading={loading} />
             </TabsContent>
-            <TabsContent value="signup">
-              <AuthForm mode="signup" onSubmit={handleSubmit} isLoading={loading} />
+            <TabsContent value="register">
+              <AuthForm mode="register" onSubmit={handleSubmit} isLoading={loading} />
             </TabsContent>
           </Tabs>
         </div>
