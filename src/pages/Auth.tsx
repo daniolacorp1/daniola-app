@@ -17,7 +17,11 @@ export default function Auth() {
     role?: 'buyer' | 'miner';
   }) => {
     try {
+      // Log the attempt
+      console.log('Form submission started:', { mode, ...data, password: '***' });
+
       if (mode === "login") {
+        console.log('Attempting login...');
         const { data: authData, error } = await supabase.auth.signInWithPassword({
           email: data.email,
           password: data.password,
@@ -25,6 +29,7 @@ export default function Auth() {
 
         if (error) throw error;
 
+        console.log('Login successful');
         toast({
           title: "Welcome back!",
           description: "You have successfully logged in.",
@@ -32,19 +37,30 @@ export default function Auth() {
         
         navigate('/dashboard');
       } else {
-        console.log('Attempting signup with:', { ...data, password: '***' });
+        console.log('Attempting signup...');
+        // First, check if Supabase is properly initialized
+        console.log('Supabase client check:', !!supabase);
 
         const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
+          options: {
+            data: {
+              full_name: data.full_name,
+              role: data.role,
+            },
+          },
         });
+
+        console.log('Signup response:', { signUpData, error: signUpError });
 
         if (signUpError) {
           console.error('Signup error:', signUpError);
           throw signUpError;
         }
 
-        if (signUpData.user) {
+        if (signUpData?.user) {
+          console.log('Creating profile...');
           const { error: profileError } = await supabase
             .from('profiles')
             .insert([
@@ -61,11 +77,13 @@ export default function Auth() {
             throw profileError;
           }
 
+          console.log('Profile created successfully');
           toast({
             title: "Account created successfully!",
             description: "Please check your email to verify your account.",
           });
 
+          // Navigate to a confirmation page
           navigate('/auth/confirm-email');
         }
       }
@@ -91,7 +109,11 @@ export default function Auth() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <AuthForm mode={mode} onSubmit={handleSubmit} onModeChange={setMode} />
+          <AuthForm 
+            mode={mode} 
+            onSubmit={handleSubmit} 
+            onModeChange={setMode} 
+          />
         </CardContent>
       </Card>
     </div>
