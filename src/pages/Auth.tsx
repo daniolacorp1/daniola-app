@@ -11,7 +11,6 @@ export default function Auth() {
   const { toast } = useToast();
   const [mode, setMode] = useState<"login" | "signup">("login");
 
-
   const handleSubmit = async (data: {
     email: string;
     password: string;
@@ -27,61 +26,60 @@ export default function Auth() {
 
         if (error) throw error;
 
-        // Get user's role from Supabase
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', authData.user.id)
-          .single();
-
-        if (profileError) throw profileError;
-
         toast({
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
-
+        
         // Navigate based on user role
-        navigate(profile.role === 'buyer' ? '/buyer/dashboard' : '/miner/dashboard');
+        navigate('/dashboard');
       } else {
-        // Signup
-        const { data: authData, error } = await supabase.auth.signUp({
+        // Log the signup attempt
+        console.log('Attempting signup with:', { ...data, password: '***' });
+
+        // Signup with Supabase
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
-          options: {
-            data: {
-              full_name: data.full_name,
-              role: data.role,
-            },
-          },
         });
 
-        if (error) throw error;
+        if (signUpError) {
+          console.error('Signup error:', signUpError);
+          throw signUpError;
+        }
 
-        // Create profile in profiles table
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              id: authData.user?.id,
-              full_name: data.full_name,
-              role: data.role,
-              email: data.email
-            }
-          ]);
+        console.log('Signup successful:', signUpData);
 
-        if (profileError) throw profileError;
+        // Only proceed if we have a user
+        if (signUpData.user) {
+          // Create profile entry
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([
+              {
+                id: signUpData.user.id,
+                full_name: data.full_name || '',
+                role: data.role || 'buyer',
+                email: data.email
+              }
+            ]);
 
-        toast({
-          title: "Account created!",
-          description: "Please check your email to verify your account.",
-        });
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+            throw profileError;
+          }
 
-        // Navigate based on selected role
-        navigate(data.role === 'buyer' ? '/buyer/dashboard' : '/miner/dashboard');
+          toast({
+            title: "Account created successfully!",
+            description: "Please check your email to verify your account.",
+          });
+
+          // Optionally navigate to a confirmation page
+          navigate('/auth/confirm-email');
+        }
       }
     } catch (error) {
-      console.error('Authentication error:', error);
+      console.error('Auth error:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -89,7 +87,8 @@ export default function Auth() {
       });
     }
   };
- return (
+
+  return (
     <div className="container mx-auto py-10">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader>
