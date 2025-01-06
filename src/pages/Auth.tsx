@@ -1,222 +1,167 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { AuthForm } from "@/components/auth/AuthForm";
-import { DemoAccess } from "@/components/auth/DemoAccess";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AuthMode } from "@/types/auth";
+// src/components/auth/AuthForm.tsx
+import React, { useState } from 'react';
+import { Mail, Lock, User } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-// Define types for form values
-interface AuthFormValues {
+// Type for form data
+interface FormData {
   email: string;
   password: string;
-  full_name?: string;
-  role?: 'buyer' | 'supplier';
+  full_name: string;
+  role: 'buyer' | 'miner';
 }
 
-interface Profile {
-  id: string;
-  email: string;
-  full_name?: string;
-  role: 'buyer' | 'supplier';
+interface AuthFormProps {
+  mode: "login" | "signup";
+  onSubmit?: (data: FormData) => void;
 }
 
-const Auth = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [mode, setMode] = useState<AuthMode>("login");
-  const [loading, setLoading] = useState(false);
+// Component for form fields with icon
+const IconInput = ({ 
+  icon: Icon, 
+  name, 
+  type, 
+  placeholder, 
+  value, 
+  onChange, 
+  error 
+}: { 
+  icon: React.ElementType;
+  name: string;
+  type: string;
+  placeholder?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+}) => (
+  <div className="space-y-1">
+    <label className="text-sm font-medium text-gray-700">
+      {name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+    </label>
+    <div className="relative">
+      <Icon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+      <input
+        name={name}
+        type={type}
+        placeholder={placeholder}
+        className="w-full rounded-md border border-gray-300 pl-10 py-2 focus:border-gray-500 focus:outline-none"
+        value={value}
+        onChange={onChange}
+      />
+    </div>
+    {error && <p className="text-sm text-red-500">{error}</p>}
+  </div>
+);
 
-  useEffect(() => {
-    let mounted = true;
+export const AuthForm = ({ mode, onSubmit }: AuthFormProps) => {
+  const [formData, setFormData] = useState<FormData>({
+    email: '',
+    password: '',
+    full_name: '',
+    role: 'buyer'
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Check if user is already logged in
-    const checkUser = async () => {
-      if (!mounted) return;
-      try {
-        const { createClient } = await import('@supabase/supabase-js');
-        
-        const supabaseUrl = 'https://your-supabase-url.supabase.co';
-        const supabaseKey = 'your-anon-key';
-        const supabase = createClient(supabaseUrl, supabaseKey);
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        if (session && mounted) {
-          navigate("/dashboard");
-        }
-      } catch (error) {
-        console.error('Session check error:', error);
-      }
-    };
-
-    checkUser();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return;
-        if (event === 'SIGNED_IN' && session) {
-          setLoading(true);
-          try {
-            // Check if profile exists
-            const { data: existingProfile, error: profileError } = await supabase
-              .from('profiles')
-              .select()
-              .eq('id', session.user.id)
-              .single();
-
-            if (profileError && profileError.code !== 'PGRST116') { // PGRST116 is "not found" error
-              throw profileError;
-            }
-
-            if (!existingProfile) {
-              // Create new profile
-              const newProfile: Profile = {
-                id: session.user.id,
-                email: session.user.email || '',
-                full_name: session.user.user_metadata.full_name,
-                role: session.user.user_metadata.role || 'buyer',
-              };
-
-              const { error: insertError } = await supabase
-                .from('profiles')
-                .insert(newProfile);
-
-              if (insertError) throw insertError;
-            }
-
-            toast({
-              title: "Welcome!",
-              description: "Successfully signed in.",
-            });
-            navigate("/dashboard");
-          } catch (error: any) {
-            if (mounted) {
-              console.error('Error in auth flow:', error);
-              toast({
-                title: "Error",
-                description: error.message || "An error occurred during sign in. Please try again.",
-                variant: "destructive",
-              });
-            }
-          } finally {
-            if (mounted) {
-              setLoading(false);
-            }
-          }
-        }
-      }
-    );
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
-
-  const handleSubmit = async (values: AuthFormValues) => {
-    if (loading) return;
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
     
-    setLoading(true);
-    try {
-      if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: values.email,
-          password: values.password,
-        });
-        if (error) throw error;
-      } else {
-        if (!values.full_name || !values.role) {
-          throw new Error('Full name and role are required for registration');
-        }
-        
-        const { error } = await supabase.auth.signUp({
-          email: values.email,
-          password: values.password,
-          options: {
-            data: {
-              full_name: values.full_name,
-              role: values.role,
-            },
-          },
-        });
-        if (error) throw error;
-        
-        toast({
-          title: "Success",
-          description: "Please check your email to verify your account.",
-        });
-      }
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "An unexpected error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address.';
+    }
+    
+    // Password validation
+    if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters.';
+    }
+    
+    // Name validation (only for signup)
+    if (mode === "signup" && formData.full_name.length < 2) {
+      newErrors.full_name = 'Name must be at least 2 characters.';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      onSubmit?.(formData);
     }
   };
 
-  const handleDemoLogin = async (role: 'buyer' | 'supplier') => {
-    setLoading(true);
-    try {
-      const email = role === 'buyer' ? 'demo.buyer@example.com' : 'demo.supplier@example.com';
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password: 'demo123456',
-      });
-      if (error) throw error;
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <img
-            src="/lovable-uploads/8a224150-1026-4320-9d88-b1f755e4743f.png"
-            alt="Logo"
-            className="w-48 mx-auto"
-          />
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {mode === "signup" && (
+        <IconInput
+          icon={User}
+          name="full_name"
+          type="text"
+          placeholder="John Doe"
+          value={formData.full_name}
+          onChange={handleInputChange}
+          error={errors.full_name}
+        />
+      )}
 
-        <div className="bg-white p-8 rounded-lg shadow space-y-6">
-          <Tabs defaultValue="login" onValueChange={(value) => setMode(value as AuthMode)}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login" disabled={loading}>Login</TabsTrigger>
-              <TabsTrigger value="signup" disabled={loading}>Register</TabsTrigger>
-            </TabsList>
-            <TabsContent value="login" className="space-y-4">
-              <AuthForm mode="login" onSubmit={handleSubmit} isLoading={loading} />
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-muted-foreground">
-                    Or try a demo account
-                  </span>
-                </div>
-              </div>
-              <DemoAccess onDemoLogin={handleDemoLogin} isLoading={loading} />
-            </TabsContent>
-            <TabsContent value="register">
-              <AuthForm mode="register" onSubmit={handleSubmit} isLoading={loading} />
-            </TabsContent>
-          </Tabs>
+      <IconInput
+        icon={Mail}
+        name="email"
+        type="email"
+        placeholder="you@example.com"
+        value={formData.email}
+        onChange={handleInputChange}
+        error={errors.email}
+      />
+
+      <IconInput
+        icon={Lock}
+        name="password"
+        type="password"
+        value={formData.password}
+        onChange={handleInputChange}
+        error={errors.password}
+      />
+
+      {mode === "signup" && (
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-700">
+            I am a
+          </label>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleInputChange}
+            className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-gray-500 focus:outline-none"
+          >
+            <option value="buyer">Buyer</option>
+            <option value="miner">Miner</option>
+          </select>
         </div>
-      </div>
-    </div>
+      )}
+
+      <button
+        type="submit"
+        className="w-full h-11 bg-[#F2E2E2] hover:bg-[#F2E2E2]/90 rounded-md font-medium"
+      >
+        {mode === "login" ? "Sign In" : "Create Account"}
+      </button>
+    </form>
   );
 };
-
-export default Auth;
