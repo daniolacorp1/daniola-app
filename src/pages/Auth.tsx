@@ -26,11 +26,24 @@ export default function Auth() {
 
         if (error) throw error;
 
+        // Get user's role from Supabase
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', authData.user.id)
+          .single();
+
+        if (profileError) throw profileError;
+
         toast({
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
+
+        // Navigate based on user role
+        navigate(profile.role === 'buyer' ? '/buyer/dashboard' : '/miner/dashboard');
       } else {
+        // Signup
         const { data: authData, error } = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
@@ -44,14 +57,28 @@ export default function Auth() {
 
         if (error) throw error;
 
+        // Create profile in profiles table
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: authData.user?.id,
+              full_name: data.full_name,
+              role: data.role,
+              email: data.email
+            }
+          ]);
+
+        if (profileError) throw profileError;
+
         toast({
           title: "Account created!",
           description: "Please check your email to verify your account.",
         });
-      }
 
-      // Navigate on success
-      navigate("/dashboard");
+        // Navigate based on selected role
+        navigate(data.role === 'buyer' ? '/buyer/dashboard' : '/miner/dashboard');
+      }
     } catch (error) {
       console.error('Authentication error:', error);
       toast({
