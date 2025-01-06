@@ -1,45 +1,94 @@
+// AuthForm.tsx
 import React, { useState } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
 
-const Input = ({ className = '', ...props }) => (
+type AuthMode = 'login' | 'signup';
+
+interface FormData {
+  email: string;
+  password: string;
+  full_name: string;
+  role: 'buyer' | 'miner';
+}
+
+interface AuthFormProps {
+  mode: AuthMode;
+  onSubmit?: (data: FormData) => void;
+}
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+  full_name?: string;
+  role?: string;
+}
+
+// Base UI components
+const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ 
+  children, 
+  className = '', 
+  ...props 
+}) => (
+  <button 
+    className={`px-4 py-2 rounded-md transition-colors ${className}`}
+    {...props}
+  >
+    {children}
+  </button>
+);
+
+const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ 
+  className = '', 
+  ...props 
+}) => (
   <input
     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200 ${className}`}
     {...props}
   />
 );
 
-const FormLabel = ({ children }) => (
+const FormLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <label className="block text-sm font-medium text-gray-700 mb-1">
     {children}
   </label>
 );
 
-const FormMessage = ({ message }) => (
+const FormMessage: React.FC<{ message?: string }> = ({ message }) => (
   message ? <p className="text-sm text-red-500 mt-1">{message}</p> : null
 );
 
-const Select = ({ value, onChange, children }) => (
+const Select: React.FC<React.SelectHTMLAttributes<HTMLSelectElement>> = ({ 
+  value, 
+  onChange, 
+  children,
+  className = '',
+  ...props
+}) => (
   <select 
     value={value}
     onChange={onChange}
-    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200"
+    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200 ${className}`}
+    {...props}
   >
     {children}
   </select>
 );
 
-const AuthForm = ({ mode = 'login' }) => {
-  const [formData, setFormData] = useState({
+export const AuthForm: React.FC<AuthFormProps> = ({ 
+  mode = 'login', 
+  onSubmit = console.log 
+}) => {
+  const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
     full_name: '',
     role: 'buyer'
   });
   
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  const validateForm = () => {
-    const newErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
     
     if (!formData.email) {
       newErrors.email = 'Email is required';
@@ -63,14 +112,14 @@ const AuthForm = ({ mode = 'login' }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log('Form submitted:', formData);
+      onSubmit(formData);
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -79,7 +128,7 @@ const AuthForm = ({ mode = 'login' }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md mx-auto p-6">
       {mode === "signup" && (
         <div>
           <FormLabel>Full Name</FormLabel>
@@ -103,6 +152,7 @@ const AuthForm = ({ mode = 'login' }) => {
           <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           <Input
             name="email"
+            type="email"
             placeholder="you@example.com"
             className="pl-10"
             value={formData.email}
@@ -131,8 +181,9 @@ const AuthForm = ({ mode = 'login' }) => {
         <div>
           <FormLabel>I am a</FormLabel>
           <Select
+            name="role"
             value={formData.role}
-            onChange={(e) => handleChange({ target: { name: 'role', value: e.target.value } })}
+            onChange={handleChange}
           >
             <option value="buyer">Buyer</option>
             <option value="miner">Miner</option>
@@ -141,12 +192,12 @@ const AuthForm = ({ mode = 'login' }) => {
         </div>
       )}
 
-      <button
+      <Button
         type="submit"
-        className="w-full h-11 bg-[#F2E2E2] hover:bg-red-100 rounded-md transition-colors"
+        className="w-full h-11 bg-[#F2E2E2] hover:bg-red-100"
       >
         {mode === "login" ? "Sign In" : "Create Account"}
-      </button>
+      </Button>
     </form>
   );
 };
