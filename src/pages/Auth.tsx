@@ -5,6 +5,7 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { DemoAccess } from "@/components/auth/DemoAccess";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/lib/supabase"; // Make sure you have this import
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -19,26 +20,47 @@ export default function Auth() {
   }) => {
     try {
       if (mode === "login") {
-        // Add your login logic here
-        console.log("Login data:", data);
+        // Login with Supabase
+        const { data: authData, error } = await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        });
       } else {
-        // Add your signup logic here
-        console.log("Signup data:", data);
+        // Signup with Supabase
+        const { data: authData, error } = await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+          options: {
+            data: {
+              full_name: data.full_name,
+              role: data.role,
+            },
+          },
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Account created!",
+          description: "Please check your email to verify your account.",
+        });
       }
-      
-      // On success:
-      toast({
-        title: mode === "login" ? "Welcome back!" : "Account created!",
-        description: mode === "login" 
-          ? "You have successfully logged in." 
-          : "Your account has been created successfully.",
-      });
+
+      // Navigate on success
       navigate("/dashboard");
     } catch (error) {
+      console.error('Authentication error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
       });
     }
   };
