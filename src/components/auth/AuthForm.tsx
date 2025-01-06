@@ -1,158 +1,154 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { AuthMode } from "@/types/auth";
-import { Mail, Lock, User } from "lucide-react";
+import React, { useState } from 'react';
+import { Mail, Lock, User } from 'lucide-react';
 
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-  full_name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }).optional(),
-  role: z.enum(['buyer', 'miner']).optional(),
-});
+const Input = ({ className = '', ...props }) => (
+  <input
+    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200 ${className}`}
+    {...props}
+  />
+);
 
-interface AuthFormProps {
-  mode: AuthMode;
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
-}
+const FormLabel = ({ children }) => (
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    {children}
+  </label>
+);
 
-export const AuthForm = ({ mode, onSubmit }: AuthFormProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      full_name: "",
-      role: "buyer",
-    },
+const FormMessage = ({ message }) => (
+  message ? <p className="text-sm text-red-500 mt-1">{message}</p> : null
+);
+
+const Select = ({ value, onChange, children }) => (
+  <select 
+    value={value}
+    onChange={onChange}
+    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200"
+  >
+    {children}
+  </select>
+);
+
+const AuthForm = ({ mode = 'login' }) => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    full_name: '',
+    role: 'buyer'
   });
+  
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    }
+    
+    if (mode === 'signup') {
+      if (!formData.full_name || formData.full_name.length < 2) {
+        newErrors.full_name = 'Name must be at least 2 characters';
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      console.log('Form submitted:', formData);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {mode === "signup" && (
-          <FormField
-            control={form.control}
-            name="full_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium text-gray-700">
-                  Full Name
-                </FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <Input
-                      placeholder="John Doe"
-                      className="pl-10"
-                      {...field}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {mode === "signup" && (
+        <div>
+          <FormLabel>Full Name</FormLabel>
+          <div className="relative">
+            <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Input
+              name="full_name"
+              placeholder="John Doe"
+              className="pl-10"
+              value={formData.full_name}
+              onChange={handleChange}
+            />
+          </div>
+          <FormMessage message={errors.full_name} />
+        </div>
+      )}
+
+      <div>
+        <FormLabel>Email</FormLabel>
+        <div className="relative">
+          <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+          <Input
+            name="email"
+            placeholder="you@example.com"
+            className="pl-10"
+            value={formData.email}
+            onChange={handleChange}
           />
-        )}
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-700">
-                Email
-              </FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  <Input
-                    placeholder="you@example.com"
-                    className="pl-10"
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-700">
-                Password
-              </FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  <Input
-                    type="password"
-                    className="pl-10"
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {mode === "signup" && (
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium text-gray-700">
-                  I am a
-                </FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="buyer">Buyer</SelectItem>
-                    <SelectItem value="miner">Miner</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+        </div>
+        <FormMessage message={errors.email} />
+      </div>
+
+      <div>
+        <FormLabel>Password</FormLabel>
+        <div className="relative">
+          <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+          <Input
+            name="password"
+            type="password"
+            className="pl-10"
+            value={formData.password}
+            onChange={handleChange}
           />
-        )}
-        <Button
-          type="submit"
-          className="w-full h-11 bg-[#F2E2E2] hover:bg-[#F2E2E2]/90"
-        >
-          {mode === "login" ? "Sign In" : "Create Account"}
-        </Button>
-      </form>
-    </Form>
+        </div>
+        <FormMessage message={errors.password} />
+      </div>
+
+      {mode === "signup" && (
+        <div>
+          <FormLabel>I am a</FormLabel>
+          <Select
+            value={formData.role}
+            onChange={(e) => handleChange({ target: { name: 'role', value: e.target.value } })}
+          >
+            <option value="buyer">Buyer</option>
+            <option value="miner">Miner</option>
+          </Select>
+          <FormMessage message={errors.role} />
+        </div>
+      )}
+
+      <button
+        type="submit"
+        className="w-full h-11 bg-[#F2E2E2] hover:bg-red-100 rounded-md transition-colors"
+      >
+        {mode === "login" ? "Sign In" : "Create Account"}
+      </button>
+    </form>
   );
 };
+
+export default AuthForm;
