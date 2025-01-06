@@ -9,6 +9,7 @@ export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [mode, setMode] = useState<"login" | "signup">("login");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (data: {
     email: string;
@@ -16,12 +17,12 @@ export default function Auth() {
     full_name?: string;
     role?: 'buyer' | 'miner';
   }) => {
+    if (isSubmitting) return; // Prevent multiple submissions
+
     try {
-      // Log the attempt
-      console.log('Form submission started:', { mode, ...data, password: '***' });
+      setIsSubmitting(true);
 
       if (mode === "login") {
-        console.log('Attempting login...');
         const { data: authData, error } = await supabase.auth.signInWithPassword({
           email: data.email,
           password: data.password,
@@ -29,7 +30,6 @@ export default function Auth() {
 
         if (error) throw error;
 
-        console.log('Login successful');
         toast({
           title: "Welcome back!",
           description: "You have successfully logged in.",
@@ -37,10 +37,6 @@ export default function Auth() {
         
         navigate('/dashboard');
       } else {
-        console.log('Attempting signup...');
-        // First, check if Supabase is properly initialized
-        console.log('Supabase client check:', !!supabase);
-
         const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
@@ -52,15 +48,20 @@ export default function Auth() {
           },
         });
 
-        console.log('Signup response:', { signUpData, error: signUpError });
-
         if (signUpError) {
-          console.error('Signup error:', signUpError);
+          // Check if it's a rate limit error
+          if (signUpError.message.includes('security purposes')) {
+            toast({
+              variant: "destructive",
+              title: "Please wait",
+              description: "For security reasons, please wait a moment before trying again.",
+            });
+            return;
+          }
           throw signUpError;
         }
 
         if (signUpData?.user) {
-          console.log('Creating profile...');
           const { error: profileError } = await supabase
             .from('profiles')
             .insert([
@@ -72,18 +73,14 @@ export default function Auth() {
               }
             ]);
 
-          if (profileError) {
-            console.error('Profile creation error:', profileError);
-            throw profileError;
-          }
+          if (profileError) throw profileError;
 
-          console.log('Profile created successfully');
           toast({
             title: "Account created successfully!",
             description: "Please check your email to verify your account.",
           });
 
-          // Navigate to a confirmation page
+          // Navigate to confirmation page
           navigate('/auth/confirm-email');
         }
       }
@@ -92,8 +89,14 @@ export default function Auth() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        description: error instanceof Error 
+          ? error.message 
+          : "Something went wrong. Please try again.",
       });
+    } finally {
+      setIsSubmitting(false);
+      // Add a slight delay before allowing another submission
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   };
 
@@ -112,7 +115,8 @@ export default function Auth() {
           <AuthForm 
             mode={mode} 
             onSubmit={handleSubmit} 
-            onModeChange={setMode} 
+            onModeChange={setMode}
+            disabled={isSubmitting}
           />
         </CardContent>
       </Card>
