@@ -1,7 +1,7 @@
 {
-  "name": "Trade Sage Dashboard",
-  "short_name": "Trade Sage",
-  "description": "Your trading companion",
+  "name": "Daniola",
+  "short_name": "Daniola",
+  "description": "Trade Smarter.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
