@@ -16,21 +16,29 @@ export default function Auth() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (data: {
-    email: string;
-    password: string;
-    full_name?: string;
-  }) => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
+  email: string;
+  password: string;
+  full_name?: string;
+}) => {
+  if (isSubmitting) return;
+  setIsSubmitting(true);
 
-    try {
-      if (mode === "login") {
-        const { data: authData, error } = await supabase.auth.signInWithPassword({
-          email: data.email,
-          password: data.password,
-        });
-        if (error) throw error;
-        navigate(`/${role}/dashboard`);
+  try {
+    if (mode === "login") {
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+      if (error) throw error;
+
+      // Get user role from profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', authData.user.id)
+        .single();
+
+      navigate(`/${profile.role}/dashboard`);
       } else {
         const { data: signUpData, error } = await supabase.auth.signUp({
           email: data.email,
