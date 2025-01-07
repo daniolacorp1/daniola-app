@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { supabase } from "@/lib/supabase";
+import ConfirmEmail from "@/pages/ConfirmEmail";
 
 export default function Auth() {
   const navigate = useNavigate();
