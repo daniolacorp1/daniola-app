@@ -28,7 +28,6 @@ export default function Auth() {
           email: data.email,
           password: data.password,
         });
-
         if (error) throw error;
         navigate(`/${role}/dashboard`);
       } else {
@@ -37,7 +36,6 @@ export default function Auth() {
           password: data.password,
           options: { data: { full_name: data.full_name, role } }
         });
-
         if (error) throw error;
         if (signUpData?.user) {
           await supabase.from('profiles').insert({
@@ -64,8 +62,17 @@ export default function Auth() {
   return (
     <div className="container mx-auto py-10">
       <Card className="w-full max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle>Daniola</CardTitle>
+        <CardHeader className="space-y-3">
+          <svg viewBox="0 0 400 300" className="w-32 h-32 mx-auto">
+            <g transform="translate(100, 50)">
+              <path d="M100,0 L200,173.2 L0,173.2 Z" fill="#ef4444" />
+              <circle cx="100" cy="40" r="20" fill="#ef4444" />
+              <text x="0" y="220" fontSize="80" fontFamily="Arial" fill="#ef4444">
+                dani<tspan fill="#8b5cf6">ola</tspan>
+              </text>
+            </g>
+          </svg>
+          <CardTitle className="text-center">Sign in to your account</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs value={mode} onValueChange={(value) => setMode(value as "login" | "signup")}>
@@ -73,11 +80,9 @@ export default function Auth() {
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
-
             <TabsContent value="login">
               <AuthForm mode="login" onSubmit={handleSubmit} disabled={isSubmitting} />
             </TabsContent>
-
             <TabsContent value="signup">
               <div className="space-y-4">
                 <Select value={role} onValueChange={(value) => setRole(value as "buyer" | "miner")}>
