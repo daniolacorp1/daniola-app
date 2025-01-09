@@ -1,10 +1,8 @@
-// src/pages/Auth.tsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { DemoAccess } from "@/components/auth/DemoAccess";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AuthMode, AuthFormValues, UserProfile } from "@/types/auth";
 
@@ -129,26 +127,6 @@ const Auth = () => {
     }
   };
 
-  const handleDemoLogin = async (role: 'buyer' | 'supplier') => {
-    setLoading(true);
-    try {
-      const email = role === 'buyer' ? 'demo.buyer@example.com' : 'demo.supplier@example.com';
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password: 'demo123456',
-      });
-      if (error) throw error;
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
@@ -168,17 +146,6 @@ const Auth = () => {
             </TabsList>
             <TabsContent value="login" className="space-y-4">
               <AuthForm mode="login" onSubmit={handleSubmit} isLoading={loading} />
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-muted-foreground">
-                    Or try a demo account
-                  </span>
-                </div>
-              </div>
-              <DemoAccess onDemoLogin={handleDemoLogin} isLoading={loading} />
             </TabsContent>
             <TabsContent value="signup">
               <AuthForm mode="signup" onSubmit={handleSubmit} isLoading={loading} />
