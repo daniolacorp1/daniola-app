@@ -1,3 +1,4 @@
+// src/pages/Auth.tsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,7 +42,7 @@ const Auth = () => {
               .eq('id', session.user.id)
               .single();
 
-            if (profileError && profileError.code !== 'PGRST116') { // PGRST116 is "not found" error
+            if (profileError && profileError.code !== 'PGRST116') {
               throw profileError;
             }
 
@@ -52,6 +53,11 @@ const Auth = () => {
                 email: session.user.email || '',
                 full_name: session.user.user_metadata.full_name,
                 role: session.user.user_metadata.role || 'buyer',
+                location: session.user.user_metadata.location || '',
+                bio: session.user.user_metadata.bio,
+                commodities: session.user.user_metadata.commodities || '',
+                company_name: session.user.user_metadata.company_name,
+                years_of_experience: session.user.user_metadata.years_of_experience
               };
 
               const { error: insertError } = await supabase
@@ -89,12 +95,19 @@ const Auth = () => {
     setLoading(true);
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: values.email,
           password: values.password,
         });
+        
         if (error) throw error;
+        
+        // If login successful, data.session should exist
+        if (!data.session) {
+          throw new Error("No session created");
+        }
       } else {
+        // Signup flow
         if (!values.full_name || !values.role) {
           throw new Error('Full name and role are required for registration');
         }
@@ -106,17 +119,27 @@ const Auth = () => {
             data: {
               full_name: values.full_name,
               role: values.role,
+              location: values.location,
+              bio: values.bio,
+              commodities: values.commodities,
+              company_name: values.company_name,
+              years_of_experience: values.years_of_experience
             },
           },
         });
+
         if (error) throw error;
         
         toast({
           title: "Success",
           description: "Please check your email to verify your account.",
         });
+        
+        // Switch to login mode after successful signup
+        setMode("login");
       }
     } catch (error) {
+      console.error('Auth error:', error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "An unexpected error occurred",

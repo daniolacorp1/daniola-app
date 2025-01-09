@@ -75,9 +75,17 @@ export const AuthForm = ({ mode, onSubmit, isLoading }) => {
     },
   });
 
+  const handleSubmit = async (values) => {
+    try {
+      await onSubmit(values);
+    } catch (error) {
+      console.error('Form submission error:', error);
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
@@ -249,14 +257,17 @@ export const AuthForm = ({ mode, onSubmit, isLoading }) => {
 
         <Button
           type="submit"
-          className="w-full h-11 bg-[#F2E2E2] hover:bg-[#F2E2E2]/90"
+          className="w-full h-11 bg-[#FF4B4B] hover:bg-[#FF3333] text-white font-medium"
           disabled={isLoading}
         >
-          {isLoading
-            ? "Please wait..."
-            : mode === "login"
-            ? "Sign In"
-            : "Create Account"}
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span>Please wait...</span>
+            </div>
+          ) : (
+            mode === "login" ? "Sign In" : "Create Account"
+          )}
         </Button>
       </form>
     </Form>
