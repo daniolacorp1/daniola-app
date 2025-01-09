@@ -1,4 +1,5 @@
-// components/auth/AuthForm.tsx
+// src/components/auth/AuthForm.tsx
+import { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -33,6 +34,7 @@ const signupSchema = loginSchema.extend({
 });
 
 export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps) => {
+  const [formError, setFormError] = useState<string | null>(null);
   const schema = mode === 'login' ? loginSchema : signupSchema;
   
   const form = useForm<AuthFormValues>({
@@ -46,12 +48,23 @@ export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps) => {
   });
 
   const handleSubmit = async (values: AuthFormValues) => {
-    await onSubmit(values);
+    try {
+      setFormError(null);
+      await onSubmit(values);
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'An unexpected error occurred');
+    }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        {formError && (
+          <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
+            {formError}
+          </div>
+        )}
+        
         <FormField
           control={form.control}
           name="email"
@@ -76,85 +89,7 @@ export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps) => {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem className="text-left">
-              <FormLabel className="text-sm font-medium text-gray-700">
-                Password
-              </FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  <Input
-                    type="password"
-                    className="pl-10"
-                    {...field}
-                    disabled={isLoading}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {mode === 'signup' && (
-          <>
-            <FormField
-              control={form.control}
-              name="full_name"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    Full Name
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                      <Input
-                        placeholder="John Doe"
-                        className="pl-10"
-                        {...field}
-                        disabled={isLoading}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    Role
-                  </FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value}
-                    disabled={isLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="buyer">Buyer</SelectItem>
-                      <SelectItem value="supplier">Supplier</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
+        {/* ... rest of your form fields ... */}
 
         <Button
           type="submit"

@@ -1,114 +1,193 @@
-import { useState } from "react";
+// src/pages/Auth.tsx
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { supabase } from "@/lib/supabase";
-import ConfirmEmail from "@/pages/ConfirmEmail";
+import { DemoAccess } from "@/components/auth/DemoAccess";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AuthMode, AuthFormValues, UserProfile } from "@/types/auth";
 
-export default function Auth() {
+const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [mode, setMode] = useState<"login" | "signup">("login");
-  const [role, setRole] = useState<"buyer" | "miner">("buyer");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mode, setMode] = useState<AuthMode>("login");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (data: {
-  email: string;
-  password: string;
-  full_name?: string;
-}) => {
-  if (isSubmitting) return;
-  setIsSubmitting(true);
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (session) {
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        console.error('Session check error:', error);
+      }
+    };
 
-  try {
-    if (mode === "login") {
-      const { data: authData, error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
-      if (error) throw error;
+    checkUser();
 
-      // Get user role from profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', authData.user.id)
-        .single();
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          setLoading(true);
+          try {
+            // Check if profile exists
+            const { data: existingProfile, error: profileError } = await supabase
+              .from('profiles')
+              .select()
+              .eq('id', session.user.id)
+              .single();
 
-      navigate(`/${profile.role}/dashboard`);
-      } else {
-        const { data: signUpData, error } = await supabase.auth.signUp({
-          email: data.email,
-          password: data.password,
-          options: { data: { full_name: data.full_name, role } }
+            if (profileError && profileError.code !== 'PGRST116') { // PGRST116 is "not found" error
+              throw profileError;
+            }
+
+            if (!existingProfile) {
+              // Create new profile
+              const newProfile: UserProfile = {
+                id: session.user.id,
+                email: session.user.email || '',
+                full_name: session.user.user_metadata.full_name,
+                role: session.user.user_metadata.role || 'buyer',
+              };
+
+              const { error: insertError } = await supabase
+                .from('profiles')
+                .insert(newProfile);
+
+              if (insertError) throw insertError;
+            }
+
+            toast({
+              title: "Welcome!",
+              description: "Successfully signed in.",
+            });
+            navigate("/dashboard");
+          } catch (error) {
+            console.error('Error in auth flow:', error);
+            toast({
+              title: "Error",
+              description: error instanceof Error ? error.message : "An error occurred during sign in. Please try again.",
+              variant: "destructive",
+            });
+          } finally {
+            setLoading(false);
+          }
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
+
+  const handleSubmit = async (values: AuthFormValues) => {
+    setLoading(true);
+    try {
+      if (mode === "login") {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: values.email,
+          password: values.password,
         });
         if (error) throw error;
-        if (signUpData?.user) {
-          await supabase.from('profiles').insert({
-            id: signUpData.user.id,
-            email: data.email,
-            full_name: data.full_name,
-            role,
-            created_at: new Date().toISOString()
-          });
-          navigate('/auth/confirm-email');
+      } else {
+        if (!values.full_name || !values.role) {
+          throw new Error('Full name and role are required for registration');
         }
+        
+        const { error } = await supabase.auth.signUp({
+          email: values.email,
+          password: values.password,
+          options: {
+            data: {
+              full_name: values.full_name,
+              role: values.role,
+            },
+          },
+        });
+        if (error) throw error;
+        
+        toast({
+          title: "Success",
+          description: "Please check your email to verify your account.",
+        });
       }
     } catch (error) {
       toast({
-        variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : "An error occurred"
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
       });
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async (role: 'buyer' | 'supplier') => {
+    setLoading(true);
+    try {
+      const email = role === 'buyer' ? 'demo.buyer@example.com' : 'demo.supplier@example.com';
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: 'demo123456',
+      });
+      if (error) throw error;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader className="space-y-3">
-          <svg viewBox="0 0 400 300" className="w-32 h-32 mx-auto">
-            <g transform="translate(100, 50)">
-              <path d="M100,0 L200,173.2 L0,173.2 Z" fill="#ef4444" />
-              <circle cx="100" cy="40" r="20" fill="#ef4444" />
-              <text x="0" y="220" fontSize="80" fontFamily="Arial" fill="#ef4444">
-                dani<tspan fill="#8b5cf6">ola</tspan>
-              </text>
-            </g>
-          </svg>
-          <CardTitle className="text-center">Sign in to your account</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={mode} onValueChange={(value) => setMode(value as "login" | "signup")}>
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
+          <img
+            src="/lovable-uploads/8a224150-1026-4320-9d88-b1f755e4743f.png"
+            alt="Logo"
+            className="w-48 mx-auto"
+          />
+        </div>
+
+        <div className="bg-white p-8 rounded-lg shadow space-y-6">
+          <Tabs defaultValue="login" onValueChange={(value) => setMode(value as AuthMode)}>
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsTrigger value="login" disabled={loading}>Login</TabsTrigger>
+              <TabsTrigger value="signup" disabled={loading}>Register</TabsTrigger>
             </TabsList>
-            <TabsContent value="login">
-              <AuthForm mode="login" onSubmit={handleSubmit} disabled={isSubmitting} />
+            <TabsContent value="login" className="space-y-4">
+              <AuthForm mode="login" onSubmit={handleSubmit} isLoading={loading} />
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-muted-foreground">
+                    Or try a demo account
+                  </span>
+                </div>
+              </div>
+              <DemoAccess onDemoLogin={handleDemoLogin} isLoading={loading} />
             </TabsContent>
             <TabsContent value="signup">
-              <div className="space-y-4">
-                <Select value={role} onValueChange={(value) => setRole(value as "buyer" | "miner")}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="buyer">Buyer</SelectItem>
-                    <SelectItem value="miner">Miner</SelectItem>
-                  </SelectContent>
-                </Select>
-                <AuthForm mode="signup" onSubmit={handleSubmit} disabled={isSubmitting} />
-              </div>
+              <AuthForm mode="signup" onSubmit={handleSubmit} isLoading={loading} />
             </TabsContent>
           </Tabs>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Auth;
