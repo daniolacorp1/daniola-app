@@ -1,14 +1,38 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// src/App.tsx
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
+import { Loading } from '@/components/ui/loading';
+import { SplashScreen } from '@/components/SplashScreen';
+import { Toaster } from '@/components/ui/toaster';
+
+// Page imports
 import Auth from '@/pages/Auth';
 import Dashboard from '@/pages/Dashboard';
-import { Toaster } from '@/components/ui/toaster';
+import BuyerProfile from '@/pages/buyer-profile';
+import SupplierProfile from '@/pages/supplier-profile';
+import Chat from '@/pages/Chat';
+import ChatHistory from '@/pages/ChatHistory';
+import CommoditiesChat from '@/pages/CommoditiesChat';
+import ConfirmEmail from '@/pages/ConfirmEmail';
+import CopperDetail from '@/pages/CopperDetail';
+import DealCreate from '@/pages/DealCreate';
+import DealDetail from '@/pages/DealDetail';
+import DealDetailView from '@/pages/DealDetailView';
+import Deals from '@/pages/Deals';
+import Marketplace from '@/pages/Marketplace';
+import Notifications from '@/pages/Notifications';
+import Profile from '@/pages/Profile';
+import SavedListings from '@/pages/SavedListings';
+import Settings from '@/pages/Settings';
+import VoiceMode from '@/pages/VoiceMode';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -25,64 +49,170 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     checkAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   if (isLoading) {
-    // You can replace this with a proper loading component
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
 };
 
-function App() {
+// Route wrapper for animations
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
   return (
-    <Router>
-      <Routes>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
         {/* Public Routes */}
         <Route path="/" element={<Auth />} />
-        
+        <Route path="/confirm-email" element={<ConfirmEmail />} />
+
         {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
         
-        {/* Add other protected routes here */}
-        <Route
-          path="/marketplace"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+        {/* Profile Routes */}
+        <Route path="/buyer-profile" element={
+          <ProtectedRoute>
+            <BuyerProfile />
+          </ProtectedRoute>
+        } />
+        <Route path="/supplier-profile" element={
+          <ProtectedRoute>
+            <SupplierProfile />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+
+        {/* Chat Routes */}
+        <Route path="/chat" element={
+          <ProtectedRoute>
+            <Chat />
+          </ProtectedRoute>
+        } />
+        <Route path="/chat-history" element={
+          <ProtectedRoute>
+            <ChatHistory />
+          </ProtectedRoute>
+        } />
+        <Route path="/commodities-chat" element={
+          <ProtectedRoute>
+            <CommoditiesChat />
+          </ProtectedRoute>
+        } />
+        <Route path="/voice-mode" element={
+          <ProtectedRoute>
+            <VoiceMode />
+          </ProtectedRoute>
+        } />
+
+        {/* Marketplace and Deals */}
+        <Route path="/marketplace" element={
+          <ProtectedRoute>
+            <Marketplace />
+          </ProtectedRoute>
+        } />
+        <Route path="/copper-detail" element={
+          <ProtectedRoute>
+            <CopperDetail />
+          </ProtectedRoute>
+        } />
+        <Route path="/deals" element={
+          <ProtectedRoute>
+            <Deals />
+          </ProtectedRoute>
+        } />
+        <Route path="/deal-create" element={
+          <ProtectedRoute>
+            <DealCreate />
+          </ProtectedRoute>
+        } />
+        <Route path="/deal-detail" element={
+          <ProtectedRoute>
+            <DealDetail />
+          </ProtectedRoute>
+        } />
+        <Route path="/deal-detail-view" element={
+          <ProtectedRoute>
+            <DealDetailView />
+          </ProtectedRoute>
+        } />
+        <Route path="/saved-listings" element={
+          <ProtectedRoute>
+            <SavedListings />
+          </ProtectedRoute>
+        } />
+
+        {/* Other Routes */}
+        <Route path="/notifications" element={
+          <ProtectedRoute>
+            <Notifications />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        } />
 
         {/* Catch all route - redirect to auth */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      
-      {/* Toast notifications */}
+    </AnimatePresence>
+  );
+};
+
+function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsInitialized(true);
+      if (session) {
+        setShowSplash(true);
+      }
+    };
+    
+    checkSession();
+  }, []);
+
+  if (!isInitialized) {
+    return <Loading />;
+  }
+
+  if (showSplash) {
+    return (
+      <SplashScreen
+        onComplete={() => {
+          setShowSplash(false);
+        }}
+      />
+    );
+  }
+
+  return (
+    <Router>
+      <AnimatedRoutes />
       <Toaster />
     </Router>
   );
