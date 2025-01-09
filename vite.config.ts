@@ -40,7 +40,8 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-    }
+    },
+    extensions: ['.js', '.jsx', '.ts', '.tsx'] // Add this line
   },
   optimizeDeps: {
     include: ['@supabase/supabase-js']

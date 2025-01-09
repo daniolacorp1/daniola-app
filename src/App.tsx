@@ -10,6 +10,7 @@ import { Toaster } from '@/components/ui/toaster';
 // Page imports
 import Auth from '@/pages/Auth';
 import Dashboard from '@/pages/Dashboard';
+import Profile from '@/pages/Profile.tsx';
 import BuyerProfile from '@/pages/buyer-profile';
 import SupplierProfile from '@/pages/supplier-profile';
 import Chat from '@/pages/Chat';
@@ -23,7 +24,6 @@ import DealDetailView from '@/pages/DealDetailView';
 import Deals from '@/pages/Deals';
 import Marketplace from '@/pages/Marketplace';
 import Notifications from '@/pages/Notifications';
-import Profile from '@/pages/Profile';
 import SavedListings from '@/pages/SavedListings';
 import Settings from '@/pages/Settings';
 import VoiceMode from '@/pages/VoiceMode';

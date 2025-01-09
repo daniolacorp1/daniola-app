@@ -1,6 +1,7 @@
-import React from "react";
+// src/pages/buyer-profile.tsx
 import { ArrowLeft, ThumbsUp, ThumbsDown, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const BuyerProfile = () => {
   const favoriteListings = [
@@ -64,7 +65,7 @@ const BuyerProfile = () => {
     <div className="min-h-screen">
       {/* Header */}
       <div className="py-4 flex justify-between">
-      <button onClick={() => navigate("/")}>
+        <button onClick={() => navigate("/")}>
           <ArrowLeft className="w-5 h-5" />
         </button>
         <span className="text-xl font-semibold mr-4 mt-2">Profile</span>

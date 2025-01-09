@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
-import type { UserProfile } from '@/types/auth';
+import { supabase } from '@/lib/supabase-client';
+import type { UserProfile } from '@/hooks/use-profile';
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters'),

@@ -1,6 +1,6 @@
 // src/hooks/use-profile.ts
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase-client';
 
 export interface UserProfile {
   id: string;
@@ -12,6 +12,7 @@ export interface UserProfile {
   commodities?: string;
   company_name?: string;
   years_of_experience?: string;
+  avatar_url?: string;
   created_at?: string;
   updated_at?: string;
 }

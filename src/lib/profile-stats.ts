@@ -1,5 +1,5 @@
 // src/lib/profile-stats.ts
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from './supabase-client';
 
 export interface ProfileStats {
   totalDeals: number;
