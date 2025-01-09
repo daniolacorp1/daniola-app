@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { AuthMode } from "@/types/auth";
+import { AuthMode, AuthFormValues } from "@/types/auth";
 import { Mail, Lock, User, MapPin, Building } from "lucide-react";
 
 const loginSchema = z.object({
@@ -57,10 +57,16 @@ const signupSchema = z.object({
   years_of_experience: z.string().optional(),
 });
 
-export const AuthForm = ({ mode, onSubmit, isLoading }) => {
-  const [selectedRole, setSelectedRole] = useState(null);
+interface AuthFormProps {
+  mode: AuthMode;
+  onSubmit: (values: AuthFormValues) => Promise<void>;
+  isLoading: boolean;
+}
+
+export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps) => {
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
   
-  const form = useForm({
+  const form = useForm<AuthFormValues>({
     resolver: zodResolver(mode === "login" ? loginSchema : signupSchema),
     defaultValues: {
       email: "",
@@ -75,7 +81,7 @@ export const AuthForm = ({ mode, onSubmit, isLoading }) => {
     },
   });
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values: AuthFormValues) => {
     try {
       await onSubmit(values);
     } catch (error) {
@@ -257,10 +263,10 @@ export const AuthForm = ({ mode, onSubmit, isLoading }) => {
 
         <Button
           type="submit"
-          className="w-full h-11 bg-[#FF4B4B] hover:bg-[#FF3333] text-white font-medium"
-          disabled={isLoading}
+          className="w-full h-11 bg-[#FF4B4B] hover:bg-[#FF3333] text-white font-medium transition-colors duration-200"
+          disabled={isLoading || form.formState.isSubmitting}
         >
-          {isLoading ? (
+          {(isLoading || form.formState.isSubmitting) ? (
             <div className="flex items-center justify-center gap-2">
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               <span>Please wait...</span>

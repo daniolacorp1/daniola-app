@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AuthMode, AuthFormValues, UserProfile } from "@/types/auth";
+import { AuthMode, AuthFormValues } from "@/types/auth";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -13,106 +13,60 @@ const Auth = () => {
   const [mode, setMode] = useState<AuthMode>("login");
   const [loading, setLoading] = useState(false);
 
+  // Safety timeout to prevent stuck loading state
   useEffect(() => {
-    // Check if user is already logged in
-    const checkUser = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        if (session) {
-          navigate("/dashboard");
-        }
-      } catch (error) {
-        console.error('Session check error:', error);
-      }
-    };
+    if (loading) {
+      const timeout = setTimeout(() => {
+        setLoading(false);
+      }, 10000); // Reset after 10 seconds
 
-    checkUser();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          setLoading(true);
-          try {
-            // Check if profile exists
-            const { data: existingProfile, error: profileError } = await supabase
-              .from('profiles')
-              .select()
-              .eq('id', session.user.id)
-              .single();
-
-            if (profileError && profileError.code !== 'PGRST116') {
-              throw profileError;
-            }
-
-            if (!existingProfile) {
-              // Create new profile
-              const newProfile: UserProfile = {
-                id: session.user.id,
-                email: session.user.email || '',
-                full_name: session.user.user_metadata.full_name,
-                role: session.user.user_metadata.role || 'buyer',
-                location: session.user.user_metadata.location || '',
-                bio: session.user.user_metadata.bio,
-                commodities: session.user.user_metadata.commodities || '',
-                company_name: session.user.user_metadata.company_name,
-                years_of_experience: session.user.user_metadata.years_of_experience
-              };
-
-              const { error: insertError } = await supabase
-                .from('profiles')
-                .insert(newProfile);
-
-              if (insertError) throw insertError;
-            }
-
-            toast({
-              title: "Welcome!",
-              description: "Successfully signed in.",
-            });
-            navigate("/dashboard");
-          } catch (error) {
-            console.error('Error in auth flow:', error);
-            toast({
-              title: "Error",
-              description: error instanceof Error ? error.message : "An error occurred during sign in. Please try again.",
-              variant: "destructive",
-            });
-          } finally {
-            setLoading(false);
-          }
-        }
-      }
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
+      return () => clearTimeout(timeout);
+    }
+  }, [loading]);
 
   const handleSubmit = async (values: AuthFormValues) => {
-    setLoading(true);
     try {
+      setLoading(true);
+
       if (mode === "login") {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: values.email,
           password: values.password,
         });
         
-        if (error) throw error;
+        if (error) {
+          throw error;
+        }
         
-        // If login successful, data.session should exist
-        if (!data.session) {
-          throw new Error("No session created");
+        if (data.session) {
+          // Create or update profile
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: data.session.user.id,
+              email: data.session.user.email,
+              full_name: data.session.user.user_metadata.full_name,
+              role: data.session.user.user_metadata.role || 'buyer',
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'id' });
+
+          if (profileError) {
+            console.error('Profile update error:', profileError);
+          }
+
+          toast({
+            title: "Welcome back!",
+            description: "Successfully signed in.",
+          });
+          
+          navigate("/dashboard");
         }
       } else {
-        // Signup flow
         if (!values.full_name || !values.role) {
           throw new Error('Full name and role are required for registration');
         }
         
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: values.email,
           password: values.password,
           options: {
@@ -129,20 +83,20 @@ const Auth = () => {
         });
 
         if (error) throw error;
-        
-        toast({
-          title: "Success",
-          description: "Please check your email to verify your account.",
-        });
-        
-        // Switch to login mode after successful signup
-        setMode("login");
+
+        if (data.user) {
+          toast({
+            title: "Success",
+            description: "Please check your email to verify your account.",
+          });
+          setMode("login");
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Auth error:', error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        description: error.message || "An unexpected error occurred",
         variant: "destructive",
       });
     } finally {
