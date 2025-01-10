@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:debug": "vite build --debug",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist node_modules/.vite",
-    "netlify-build": "npm install && vite build"
+    "netlify": "bash netlify.sh"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.1.2",
@@ -49,5 +50,9 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.12"
+  },
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=9.6.7"
   }
 }
