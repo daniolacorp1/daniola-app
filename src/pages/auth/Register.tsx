@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -98,6 +98,7 @@ export const Register = () => {
           <Button 
             type="submit" 
             className="w-full bg-[#FF4D4D] hover:bg-[#FF3333]"
+            onClick={() => console.log(userType)}
           >
             Create Account
           </Button>
