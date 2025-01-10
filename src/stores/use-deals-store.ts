@@ -1,5 +1,5 @@
 // src/stores/use-deals-store.ts
-import { create } from 'zustand';
+import create from 'zustand';
 import { supabase } from '@/lib/supabase';
 import type { DealType } from '@/types';
 
