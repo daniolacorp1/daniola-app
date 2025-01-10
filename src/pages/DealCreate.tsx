@@ -1,29 +1,74 @@
+// src/pages/DealCreate.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { MainHeader } from "@/components/MainHeader";
 import { BottomNav } from "@/components/BottomNav";
+import { supabase } from "@/lib/supabase-client";
+import { useDealsStore } from "@/stores/use-deals-store";
+
+interface DealForm {
+  dealType: string;
+  commodity: string;
+  quantity: number;
+  price: number;
+}
 
 const DealCreate = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const incrementDealCount = useDealsStore(state => state.incrementDealCount);
+
+  const [formData, setFormData] = useState<DealForm>({
+    dealType: 'buy',
+    commodity: 'copper',
+    quantity: 0,
+    price: 0
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: id === 'quantity' || id === 'price' ? parseFloat(value) : value
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      // Form submission logic
-      // Add your form submission logic here
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error('No authenticated user');
+
+      const { error } = await supabase
+        .from('deals')
+        .insert({
+          user_id: userData.user.id,
+          type: formData.dealType,
+          commodity: formData.commodity,
+          quantity: formData.quantity,
+          price_per_unit: formData.price,
+          status: 'pending',
+          created_at: new Date().toISOString(),
+        });
+
+      if (error) throw error;
+
+      // Increment the deal count in the store
+      incrementDealCount();
 
       toast({
         title: "Success",
         description: "Deal created successfully",
       });
+      
       navigate("/deals");
     } catch (error) {
+      console.error('Error creating deal:', error);
       toast({
         title: "Error",
         description: "Failed to create deal",
@@ -53,6 +98,8 @@ const DealCreate = () => {
               </label>
               <select
                 id="dealType"
+                value={formData.dealType}
+                onChange={handleChange}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-primary"
               >
                 <option value="buy">Buy</option>
@@ -67,6 +114,8 @@ const DealCreate = () => {
               </label>
               <select
                 id="commodity"
+                value={formData.commodity}
+                onChange={handleChange}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-primary"
               >
                 <option value="copper">Copper</option>
@@ -83,6 +132,9 @@ const DealCreate = () => {
               <input
                 type="number"
                 id="quantity"
+                value={formData.quantity}
+                onChange={handleChange}
+                min="0"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-primary"
                 placeholder="Enter quantity"
               />
@@ -96,6 +148,10 @@ const DealCreate = () => {
               <input
                 type="number"
                 id="price"
+                value={formData.price}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-primary"
                 placeholder="Enter price per unit"
               />
@@ -114,7 +170,7 @@ const DealCreate = () => {
             </Button>
             <Button
               type="submit"
-              className="w-full sm:w-auto bg-primary-light text-black hover:bg-primary-light/80"
+              className="w-full sm:w-auto bg-[#FF4B4B] hover:bg-[#FF3333] text-white"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Creating..." : "Create Deal"}
