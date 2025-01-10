@@ -3,7 +3,9 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "18"
+  VITE_SUPABASE_URL = ""
+  VITE_SUPABASE_ANON_KEY = ""
 
 [[redirects]]
   from = "/*"
