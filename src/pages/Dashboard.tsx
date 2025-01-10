@@ -5,14 +5,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-
-type Listing = {
-  title: string;
-  image: string;
-  rating: number;
-  price: string;
-  id: string;
-};
+import { Listing } from "@/types/marketplace";
 
 const Dashboard = () => {
   const navigate = useNavigate();

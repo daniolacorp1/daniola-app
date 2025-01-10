@@ -18,12 +18,10 @@ export interface Commodity {
   quantityChange: number;
 }
 
-export interface Listing {
-  id: string;
+export type Listing = {
   title: string;
   image: string;
+  rating: number;
   price: string;
-  location?: string;
-  category?: string;
-  rating?: number;
-}
+  id: string;
+};

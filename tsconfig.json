@@ -15,12 +15,13 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vite/client"],  // Add this line
+    "types": ["vite/client"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "esModuleInterop": true
   },
-  "include": ["src", "src/env.d.ts"],  // Add src/env.d.ts here
+  "include": ["src", "src/env.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
