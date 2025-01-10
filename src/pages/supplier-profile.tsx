@@ -1,9 +1,9 @@
-import React from "react";
+
 import { ArrowLeft, ThumbsUp, ThumbsDown, Star } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+// import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 
-const SupplierProfile = () => {
+export const SupplierProfile = () => {
   const stats = [
     { label: "Total deals", value: "2.5K" },
     { label: "Avg. response time", value: "2h" },

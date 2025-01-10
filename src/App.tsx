@@ -10,9 +10,7 @@ import { Toaster } from '@/components/ui/toaster';
 // Page imports
 import Auth from '@/pages/Auth';
 import Dashboard from '@/pages/Dashboard';
-import Profile from '@/pages/Profile';
-import BuyerProfile from '@/pages/BuyerProfile';
-import SupplierProfile from '@/pages/SupplierProfile';
+import { SupplierProfile } from '@/pages/supplier-profile';
 import Chat from '@/pages/Chat';
 import ChatHistory from '@/pages/ChatHistory';
 import CommoditiesChat from '@/pages/CommoditiesChat';
@@ -25,7 +23,6 @@ import Deals from '@/pages/Deals';
 import Marketplace from '@/pages/Marketplace';
 import Notifications from '@/pages/Notifications';
 import SavedListings from '@/pages/SavedListings';
-import Settings from '@/pages/Settings';
 import VoiceMode from '@/pages/VoiceMode';
 
 interface ProtectedRouteProps {
@@ -95,26 +92,10 @@ const AnimatedRoutes = () => {
 
         {/* Profile Routes */}
         <Route
-          path="/buyer-profile"
-          element={
-            <ProtectedRoute>
-              <BuyerProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/supplier-profile"
           element={
             <ProtectedRoute>
               <SupplierProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
             </ProtectedRoute>
           }
         />
@@ -187,7 +168,7 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path="/deal-detail/:id"
+          path="/deals/:id"
           element={
             <ProtectedRoute>
               <DealDetail />
@@ -217,14 +198,6 @@ const AnimatedRoutes = () => {
           element={
             <ProtectedRoute>
               <Notifications />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings />
             </ProtectedRoute>
           }
         />
