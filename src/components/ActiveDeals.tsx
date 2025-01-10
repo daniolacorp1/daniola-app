@@ -1,10 +1,9 @@
 // src/components/ActiveDeals.tsx
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { commodities } from "@/data/commodities";
 
-export const ActiveDeals = () => {
+export const ActiveDeals: React.FC<{ id?: string }> = ({ id }) => {
   const navigate = useNavigate();
-  const { id } = useParams();
 
   const deals = commodities
     .map((commodity) => ({
@@ -14,8 +13,9 @@ export const ActiveDeals = () => {
     .filter((deal) => (id ? deal.id === Number(id) : true));
 
   const handleViewDetails = (dealId: number) => {
-    // Update the navigation path to match the DealDetail route
-    navigate(`/deals/${dealId}`);
+    navigate(`/deals/${dealId}`, {
+      state: { from: location.pathname }
+    });
   };
 
   return (
@@ -27,12 +27,7 @@ export const ActiveDeals = () => {
             key={deal.name}
             className="flex items-center justify-between py-2"
           >
-            <div>
-              <h3 className="font-medium text-left">{deal.name}</h3>
-              <p className="text-sm text-green-800 text-left">
-                {deal.status} {deal.price}
-              </p>
-            </div>
+            <p>{deal.name}</p>
             <button
               onClick={() => handleViewDetails(deal.id)}
               className="px-4 py-2 text-sm text-white bg-[#FF4042] rounded-xl"

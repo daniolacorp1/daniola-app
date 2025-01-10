@@ -54,7 +54,7 @@ const signupSchema = z.object({
     message: "Please enter your commodities of interest.",
   }),
   company_name: z.string().optional(),
-  years_of_experience: z.string().optional(),
+  years_of_experience: z.number().optional(),
 });
 
 interface AuthFormProps {
@@ -77,7 +77,7 @@ export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps) => {
       bio: "",
       commodities: "",
       company_name: "",
-      years_of_experience: "",
+      years_of_experience: 0,
     },
   });
 
