@@ -1,12 +1,27 @@
 // src/components/ActiveDeals.tsx
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { commodities } from "@/data/commodities";
+import { Button } from "@/components/ui/button";
 
-export const ActiveDeals: React.FC<{ id?: string }> = ({ id }) => {
+// Define proper types
+interface Commodity {
+  id: number;
+  name: string;
+  price: string;
+  category: string;
+  description?: string;
+}
+
+interface Deal extends Commodity {
+  status: string;
+}
+
+export const ActiveDeals = ({ id }: { id?: string }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const deals = commodities
-    .map((commodity) => ({
+  const deals: Deal[] = commodities
+    .map((commodity: Commodity) => ({
       ...commodity,
       status: "Ready for Review",
     }))
@@ -19,21 +34,27 @@ export const ActiveDeals: React.FC<{ id?: string }> = ({ id }) => {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4 text-left">Active Deals</h2>
+    <div className="space-y-4">
+      <h2 className="text-xl font-bold">Active Deals</h2>
       <div className="space-y-3">
         {deals.map((deal) => (
           <div
-            key={deal.name}
-            className="flex items-center justify-between py-2"
+            key={deal.id}
+            className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm"
           >
-            <p>{deal.name}</p>
-            <button
+            <div>
+              <p className="font-medium">{deal.name}</p>
+              <p className="text-sm text-gray-600">{deal.category}</p>
+              {deal.description && (
+                <p className="text-sm text-gray-500 mt-1">{deal.description}</p>
+              )}
+            </div>
+            <Button
               onClick={() => handleViewDetails(deal.id)}
-              className="px-4 py-2 text-sm text-white bg-[#FF4042] rounded-xl"
+              className="bg-[#FF4042] hover:bg-[#E63A3C] text-white"
             >
               View Details
-            </button>
+            </Button>
           </div>
         ))}
       </div>

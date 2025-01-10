@@ -1,10 +1,10 @@
 // src/stores/use-deals-store.ts
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import type { Deal } from '@/types';
+import type { DealType } from '@/types';
 
 interface DealsState {
-  deals: Deal[];
+  deals: DealType[];
   dealCount: number;
   activeDeals: number;
   isLoading: boolean;

@@ -1,89 +1,30 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import type { AuthState, UserProfile, AuthFormValues, AuthError } from '@/types';
 
-interface AuthStore extends AuthState {
-  signIn: (values: AuthFormValues) => Promise<void>;
-  signUp: (values: AuthFormValues) => Promise<void>;
-  signOut: () => Promise<void>;
-  updateProfile: (profile: Partial<UserProfile>) => Promise<void>;
-  setLoading: (isLoading: boolean) => void;
-  setError: (error: AuthError | null) => void;
-  setUser: (user: UserProfile | null) => void;
+interface User {
+  id: string;
+  email: string;
+  full_name?: string;
 }
 
-export const useAuthStore = create<AuthStore>()((set) => ({
+interface AuthState {
+  user: User | null;
+  isLoading: boolean;
+  signIn: (credentials: { email: string; password: string }) => Promise<void>;
+  signOut: () => Promise<void>;
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoading: false,
-  error: null,
-  setLoading: (isLoading) => set({ isLoading }),
-  setError: (error) => set({ error }),
-  setUser: (user) => set({ user }),
-
-  signIn: async (values) => {
-    set({ isLoading: true, error: null });
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password,
-      });
-      if (error) throw error;
-    } catch (error) {
-      set({ error: { message: (error as Error).message } });
-    } finally {
-      set({ isLoading: false });
-    }
+  signIn: async (credentials) => {
+    set({ isLoading: true });
+    // Add your sign in logic here
+    set({ isLoading: false });
   },
-
-  signUp: async (values) => {
-    set({ isLoading: true, error: null });
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-        options: {
-          data: {
-            full_name: values.full_name,
-            role: values.role,
-          },
-        },
-      });
-      if (error) throw error;
-    } catch (error) {
-      set({ error: { message: (error as Error).message } });
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
   signOut: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      set({ user: null });
-    } catch (error) {
-      set({ error: { message: (error as Error).message } });
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
-  updateProfile: async (profile) => {
-    set({ isLoading: true, error: null });
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update(profile)
-        .eq('id', profile.id);
-      if (error) throw error;
-      set((state) => ({
-        user: state.user ? { ...state.user, ...profile } : null
-      }));
-    } catch (error) {
-      set({ error: { message: (error as Error).message } });
-    } finally {
-      set({ isLoading: false });
-    }
+    set({ isLoading: true });
+    await supabase.auth.signOut();
+    set({ user: null, isLoading: false });
   },
 })); 

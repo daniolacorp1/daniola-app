@@ -1,86 +1,54 @@
-import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 interface DealCardProps {
-  id?: number;
-  title: string;
+  icon: LucideIcon;
+  iconBgColor: string;
+  iconColor: string;
   status: string;
-  description?: string;
-  image?: string;
-  icon?: LucideIcon;
-  iconBgColor?: string;
-  iconColor?: string;
-  category?: string;
-  value?: string;
-  timeline?: string;
-  onViewDeal?: (id: number) => void;
-  onClick?: () => void;
+  title: string;
+  category: string;
+  value: string;
+  timeline: string;
+  onClick: () => void;
 }
 
 export const DealCard = ({
-  id,
-  title,
-  status,
-  description,
-  image,
   icon: Icon,
   iconBgColor,
   iconColor,
+  status,
+  title,
   category,
   value,
   timeline,
-  onViewDeal,
   onClick,
 }: DealCardProps) => {
-  const handleClick = () => {
-    if (onClick) {
-      onClick();
-    } else if (onViewDeal && id) {
-      onViewDeal(id);
-    }
-  };
-
   return (
-    <div className="overflow-hidden py-2">
-      {image ? (
-        <img
-          src={image}
-          alt={title}
-          className="h-48 w-full object-cover rounded-xl"
-        />
-      ) : (
-        Icon && (
-          <div
-            className={`w-12 h-12 rounded-lg ${iconBgColor} flex items-center justify-center`}
-          >
-            <Icon className={`w-6 h-6 ${iconColor}`} />
-          </div>
-        )
-      )}
-      <div className="py-4  bottom-3 flex  items-end justify-between"> 
-        <div className="text-left">
-          <h2 className="text-xl font-semibold">{title}</h2>
-          <p className="text-[#A14545]">Status: {status}</p>
-          {description && <p className="text-[#A14545] mt-1">{description}</p>}
-          {category && (
-            <p className="text-gray-600 mt-1">Category: {category}</p>
-          )}
-          {value && <p className="text-gray-600 mt-1">Value: {value}</p>}
-          {timeline && (
-            <p className="text-gray-600 mt-1">Timeline: {timeline}</p>
-          )}
+    <Card
+      className="p-4 cursor-pointer hover:shadow-md transition-shadow"
+      onClick={onClick}
+    >
+      <div className="flex items-start gap-4">
+        <div className={`p-2 rounded-lg ${iconBgColor}`}>
+          <Icon className={`h-5 w-5 ${iconColor}`} />
         </div>
-        <div className="">
-          <Button
-            className="
-             rounded-xl gap-0 flex items-center justify-center h-8 flex-shrink-0 self-start border-none  px-5 
-            bg-primary text-white "
-            onClick={handleClick}
-          >
-            View Deal
-          </Button>
+        <div className="flex-1">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-medium">{title}</h3>
+              <p className="text-sm text-gray-600">{category}</p>
+            </div>
+            <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
+              {status}
+            </span>
+          </div>
+          <div className="mt-2 flex justify-between text-sm">
+            <span className="font-medium">{value}</span>
+            <span className="text-gray-500">{timeline}</span>
+          </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
