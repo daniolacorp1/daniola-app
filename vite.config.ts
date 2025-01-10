@@ -73,6 +73,13 @@ export default defineConfig({
           ) {
             return 'utils';
           }
+          
+          // Specific chunk for Radix UI components
+          if (
+            id.includes('@radix-ui/react-tabs')
+          ) {
+            return 'radix';
+          }
         }
       }
     },
