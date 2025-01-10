@@ -44,7 +44,7 @@ export default defineConfig({
     outDir: 'dist',
     
     // Disable source maps in production
-    sourcemap: true,
+    sourcemap: false,
     
     // Minification using Terser
     minify: 'terser',
