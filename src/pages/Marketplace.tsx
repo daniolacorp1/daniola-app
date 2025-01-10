@@ -1,6 +1,6 @@
 import { ShoppingCart } from "lucide-react";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from "react";
+
 import { BottomNav } from "@/components/BottomNav";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { SearchFilters } from "@/components/marketplace/SearchFilters";
@@ -8,8 +8,8 @@ import { ListingDetails } from "@/components/marketplace/ListingDetails";
 import { commodities } from "@/data/commodities";
 import { Commodity } from "@/types/marketplace";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { MainHeader } from "@/components/MainHeader";
+import { useNavigate, useSearchParams } from "react-router-dom";
+// import { MainHeader } from "@/components/MainHeader";
 
 const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,8 +17,16 @@ const Marketplace = () => {
   const [selectedListing, setSelectedListing] = useState<Commodity | null>(
     null
   );
-  const { toast } = useToast();
+
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const listingId = searchParams.get('id');
+
+  useEffect(() => {
+    if (listingId) {
+      // Handle specific listing view
+    }
+  }, [listingId]);
 
   const filteredCommodities = commodities.filter((commodity) => {
     const matchesSearch =

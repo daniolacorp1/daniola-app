@@ -18,7 +18,7 @@ import ConfirmEmail from '@/pages/ConfirmEmail';
 import CopperDetail from '@/pages/CopperDetail';
 import DealCreate from '@/pages/DealCreate';
 import DealDetail from '@/pages/DealDetail';
-import DealDetailView from '@/pages/DealDetailView';
+
 import Deals from '@/pages/Deals';
 import Marketplace from '@/pages/Marketplace';
 import Notifications from '@/pages/Notifications';
@@ -38,8 +38,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
+        const { data: { session } } = await supabase.auth.getSession();
         setIsAuthenticated(!!session);
       } catch (error) {
         console.error('Auth check error:', error);
@@ -51,7 +50,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_, session) => {
       setIsAuthenticated(!!session);
     });
 
@@ -172,14 +173,6 @@ const AnimatedRoutes = () => {
           element={
             <ProtectedRoute>
               <DealDetail />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/deal-detail-view/:id"
-          element={
-            <ProtectedRoute>
-              <DealDetailView />
             </ProtectedRoute>
           }
         />

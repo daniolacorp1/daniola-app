@@ -14,8 +14,9 @@ export const ActiveDeals = () => {
     .filter((deal) => (id ? deal.id === Number(id) : true));
 
   const handleViewDetails = (dealId: number) => {
-    // Update the navigation path to match the DealDetail route
-    navigate(`/deals/${dealId}`);
+    navigate(`/deals/${dealId}`, {
+      state: { from: location.pathname }
+    });
   };
 
   return (
