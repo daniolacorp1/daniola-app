@@ -1,3 +1,4 @@
+// src/components/ActiveDeals.tsx
 import { useNavigate, useParams } from "react-router-dom";
 import { commodities } from "@/data/commodities";
 
@@ -11,6 +12,11 @@ export const ActiveDeals = () => {
       status: "Ready for Review",
     }))
     .filter((deal) => (id ? deal.id === Number(id) : true));
+
+  const handleViewDetails = (dealId: number) => {
+    // Navigate to DealDetailView instead of /deals/:id
+    navigate(`/deal-detail-view/${dealId}`);
+  };
 
   return (
     <div>
@@ -28,7 +34,7 @@ export const ActiveDeals = () => {
               </p>
             </div>
             <button
-              onClick={() => navigate(`/deals/${deal.id}`)}
+              onClick={() => handleViewDetails(deal.id)}
               className="px-4 py-2 text-sm text-white bg-[#FF4042] rounded-xl"
             >
               View Details
