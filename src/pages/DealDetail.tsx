@@ -1,3 +1,4 @@
+// src/pages/DealDetail.tsx
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Calendar, DollarSign, Building, Package, MapPin, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,19 +7,19 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { AcceptDealDialog } from "@/components/deals/AcceptDealDialog";
 import { useToast } from "@/components/ui/use-toast";
-import { useDealStore } from '@/store/dealStore';
-import { supabase } from '@/lib/supabase-client';
+import { useDealsStore } from '@/stores/use-deals-store';
+import { supabase } from '@/lib/supabase';
+import type { Deal } from '@/types';
 
 const DealDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const { toast } = useToast();
-  const { decrementDealsCount } = useDealStore();
+  const { decrementActiveDeals, decrementDealCount } = useDealsStore();
 
-  // Mock data - in a real app this would come from an API
-  const deal = {
+  // Mock data typed as Deal
+  const deal: Deal = {
     id: Number(id),
     title: "Copper Futures Contract",
     status: "Ready for Review",
@@ -63,8 +64,6 @@ const DealDetail = () => {
     navigate('/chat');
   };
 
-
-
   const handleAcceptDeal = async () => {
     try {
       const { error } = await supabase
@@ -74,15 +73,28 @@ const DealDetail = () => {
 
       if (error) throw error;
 
-      // Decrement the count after accepting
-      decrementDealsCount();
+      // Decrement both counters after accepting
+      decrementActiveDeals();
+      decrementDealCount();
       
       toast({
         title: "Success",
         description: "Deal accepted successfully",
       });
+
+      // Navigate back to deals page after short delay
+      setTimeout(() => {
+        navigate('/deals');
+      }, 1500);
     } catch (error) {
       console.error('Error accepting deal:', error);
+      toast({
+        title: "Error",
+        description: "Failed to accept deal. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setShowAcceptDialog(false);
     }
   };
 
@@ -136,21 +148,21 @@ const DealDetail = () => {
                 <h3 className="text-lg font-semibold mb-4">Key Details</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-primary" />
+                    <DollarSign className="h-5 w-5 text-[#FF4B4B]" />
                     <div>
                       <p className="text-sm text-gray-500">Price</p>
                       <p className="font-medium">{deal.price}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Package className="h-5 w-5 text-primary" />
+                    <Package className="h-5 w-5 text-[#FF4B4B]" />
                     <div>
                       <p className="text-sm text-gray-500">Quantity</p>
                       <p className="font-medium">{deal.quantity}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-primary" />
+                    <Calendar className="h-5 w-5 text-[#FF4B4B]" />
                     <div>
                       <p className="text-sm text-gray-500">Delivery Date</p>
                       <p className="font-medium">{deal.deliveryDate}</p>
@@ -172,21 +184,21 @@ const DealDetail = () => {
                 <h3 className="text-lg font-semibold mb-4">Supplier Information</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <Building className="h-5 w-5 text-primary" />
+                    <Building className="h-5 w-5 text-[#FF4B4B]" />
                     <div>
                       <p className="text-sm text-gray-500">Supplier</p>
                       <p className="font-medium">{deal.supplier}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-primary" />
+                    <MapPin className="h-5 w-5 text-[#FF4B4B]" />
                     <div>
                       <p className="text-sm text-gray-500">Location</p>
                       <p className="font-medium">{deal.location}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-primary" />
+                    <FileText className="h-5 w-5 text-[#FF4B4B]" />
                     <div>
                       <p className="text-sm text-gray-500">Terms</p>
                       <p className="font-medium">{deal.terms}</p>
@@ -209,11 +221,8 @@ const DealDetail = () => {
               Negotiate
             </Button>
             <Button 
-              className="flex-1"
-              onClick={() => {
-                setShowAcceptDialog(true);
-                handleAcceptDeal();
-              }}
+              className="flex-1 bg-[#FF4B4B] hover:bg-[#FF3333] text-white"
+              onClick={() => setShowAcceptDialog(true)}
             >
               Accept Deal
             </Button>
@@ -223,6 +232,7 @@ const DealDetail = () => {
         <AcceptDealDialog
           isOpen={showAcceptDialog}
           onClose={() => setShowAcceptDialog(false)}
+          onConfirm={handleAcceptDeal}
           dealTitle={deal.title}
           dealAmount={deal.price}
         />

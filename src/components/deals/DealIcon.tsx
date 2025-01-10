@@ -1,18 +1,9 @@
-import { LucideIcon } from 'lucide-react';
+import React from 'react';
 import { useDealsStore } from '@/stores/use-deals-store';
-import { useEffect, memo } from 'react';
+import type { DealIconProps } from '@/types';
 
-interface DealIconProps {
-  icon: LucideIcon;
-  color: string;
-}
-
-export const DealIcon = memo(({ icon: Icon, color }: DealIconProps) => {
-  const { dealCount, updateDealCount } = useDealsStore();
-
-  useEffect(() => {
-    updateDealCount();
-  }, [updateDealCount]);
+export const DealIcon: React.FC<DealIconProps> = ({ icon: Icon, color }) => {
+  const { dealCount } = useDealsStore();
 
   return (
     <div className="relative">
@@ -26,6 +17,4 @@ export const DealIcon = memo(({ icon: Icon, color }: DealIconProps) => {
       )}
     </div>
   );
-});
-
-DealIcon.displayName = 'DealIcon';
+};
