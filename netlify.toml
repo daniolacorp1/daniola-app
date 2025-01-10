@@ -1,14 +1,10 @@
 [build]
   base = "/"
   command = """
-    echo "Node version: $(node --version)" && \
-    echo "NPM version: $(npm --version)" && \
-    echo "Current directory: $(pwd)" && \
-    echo "Directory contents: $(ls -la)" && \
-    echo "Installing dependencies..." && \
-    npm install --verbose && \
-    echo "Building application..." && \
-    npm run build --verbose
+    bash scripts/deploy-checks.sh && \
+    echo "🚀 Starting deployment..." && \
+    npm install && \
+    npm run build
   """
   publish = "dist"
 
@@ -34,3 +30,51 @@
   command = "npm run dev"
   port = 8080
   publish = "dist"
+
+# Add build plugins for error tracking
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
+[[plugins]]
+  package = "@netlify/plugin-sitemap"
+
+[[plugins]]
+  package = "@sentry/netlify-build-plugin"
+
+[plugins.inputs]
+  sentryOrg = "your-org"
+  sentryProject = "your-project"
+
+# Add deploy notifications
+[[plugins]]
+  package = "netlify-plugin-discord"
+
+[plugins.inputs]
+  webhookUrl = "your-discord-webhook"
+
+# Add health checks
+[[plugins]]
+  package = "netlify-plugin-checklinks"
+
+[plugins.inputs]
+  skipPatterns = [
+    "#",
+    "mailto:",
+    "tel:"
+  ]
+
+# Add performance monitoring
+[[plugins]]
+  package = "netlify-plugin-submit-sitemap"
+
+# Add error pages
+[[redirects]]
+  from = "/404"
+  to = "/404.html"
+  status = 404
+
+[context.production.environment]
+  VITE_APP_ENV = "production"
+
+[context.deploy-preview.environment]
+  VITE_APP_ENV = "preview"
