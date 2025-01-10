@@ -24,6 +24,9 @@ export default defineConfig({
 
   // Dependency optimization
   optimizeDeps: {
+    esbuildOptions: {
+      target: 'es2020', // Adjust target based on browser support needs
+    },
     include: [
       'react', 
       'react-dom', 
@@ -41,7 +44,7 @@ export default defineConfig({
     outDir: 'dist',
     
     // Disable source maps in production
-    sourcemap: false,
+    sourcemap: true,
     
     // Minification using Terser
     minify: 'terser',
@@ -62,7 +65,10 @@ export default defineConfig({
         manualChunks(id) {
           // Split vendor dependencies into separate chunks
           if (id.includes('node_modules')) {
-            return 'vendor';
+            if (id.includes('react')) return 'vendor';
+            if (id.includes('@radix-ui')) return 'radix';
+            if (id.includes('@supabase')) return 'supabase';
+            return 'vendor'; // all other node_modules
           }
           
           // Specific chunk for utility libraries
