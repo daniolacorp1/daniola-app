@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Calendar, DollarSign, Building, Package, MapPin, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { supabase } from '@/lib/supabase-client';
 const DealDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const { toast } = useToast();
   const { decrementDealsCount } = useDealStore();
@@ -62,14 +63,7 @@ const DealDetail = () => {
     navigate('/chat');
   };
 
-<<<<<<< HEAD
-  const handleBack = () => {
-    if (location.state?.from) {
-      navigate(location.state.from);
-    } else {
-      navigate('/deals');
-    }
-  };
+
 
   const handleAcceptDeal = async () => {
     try {
@@ -92,8 +86,6 @@ const DealDetail = () => {
     }
   };
 
-=======
->>>>>>> parent of a162f9b (modified 7 changes)
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="px-4 py-3 bg-white border-b flex items-center gap-3 sticky top-0 z-10">
