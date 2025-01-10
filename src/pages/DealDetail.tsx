@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { AcceptDealDialog } from "@/components/deals/AcceptDealDialog";
 import { useToast } from "@/components/ui/use-toast";
+import { useDealStore } from '@/store/dealStore';
+import { supabase } from '@/lib/supabase-client';
 
 const DealDetail = () => {
   const { id } = useParams();
@@ -13,6 +15,7 @@ const DealDetail = () => {
   const location = useLocation();
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const { toast } = useToast();
+  const { decrementDealsCount } = useDealStore();
 
   // Mock data - in a real app this would come from an API
   const deal = {
@@ -65,6 +68,27 @@ const DealDetail = () => {
       navigate(location.state.from);
     } else {
       navigate('/deals');
+    }
+  };
+
+  const handleAcceptDeal = async () => {
+    try {
+      const { error } = await supabase
+        .from('deals')
+        .update({ status: 'accepted' })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Decrement the count after accepting
+      decrementDealsCount();
+      
+      toast({
+        title: "Success",
+        description: "Deal accepted successfully",
+      });
+    } catch (error) {
+      console.error('Error accepting deal:', error);
     }
   };
 
@@ -192,7 +216,10 @@ const DealDetail = () => {
             </Button>
             <Button 
               className="flex-1"
-              onClick={() => setShowAcceptDialog(true)}
+              onClick={() => {
+                setShowAcceptDialog(true);
+                handleAcceptDeal();
+              }}
             >
               Accept Deal
             </Button>

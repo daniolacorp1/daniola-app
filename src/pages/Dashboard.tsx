@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { MainHeader } from "@/components/MainHeader";
 import { FeaturedListings } from "@/components/FeaturedListings";
 import { ActiveDeals } from "@/components/ActiveDeals";
@@ -5,11 +6,39 @@ import { BottomNav } from "@/components/BottomNav";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase-client";
 import { Listing } from "@/types/marketplace";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [userName, setUserName] = useState<string>("");
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', user.id)
+            .single();
+
+          if (error) throw error;
+
+          if (profile) {
+            setUserName(profile.first_name);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const featuredListings = [
     {
@@ -53,7 +82,7 @@ const Dashboard = () => {
         <div className="flex flex-col pt-12">
           <div className="flex items-center text-left">
             <h1 className="text-xl font-bold py-6">
-              Good afternoon John, how can I help you today?
+              Good afternoon {userName || 'there'}, how can I help you today?
             </h1>
           </div>
         </div>

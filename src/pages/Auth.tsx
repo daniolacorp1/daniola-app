@@ -6,12 +6,15 @@ import { useToast } from "@/hooks/use-toast";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AuthMode, AuthFormValues } from "@/types/auth";
+import { Input } from "@/components/ui/input";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [mode, setMode] = useState<AuthMode>("login");
   const [loading, setLoading] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   // Safety timeout to prevent stuck loading state
   useEffect(() => {
@@ -104,6 +107,38 @@ const Auth = () => {
     }
   };
 
+  const handleSignUp = async (e: React.FormEvent) => {
+      e.preventDefault();
+      const email = ""; // Initialize email
+      const password = ""; // Initialize password
+      try {
+        const { data: { user }, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+  
+        if (signUpError) throw signUpError;
+  
+        if (user) {
+          // Create profile for the new user
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([
+              {
+                id: user.id,
+                first_name: firstName,
+                last_name: lastName,
+                updated_at: new Date().toISOString(),
+              },
+            ]);
+  
+          if (profileError) throw profileError;
+        }
+      } catch (error) {
+        console.error('Error signing up:', error);
+      }
+    };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
@@ -125,7 +160,25 @@ const Auth = () => {
               <AuthForm mode="login" onSubmit={handleSubmit} isLoading={loading} />
             </TabsContent>
             <TabsContent value="signup">
-              <AuthForm mode="signup" onSubmit={handleSubmit} isLoading={loading} />
+              <form onSubmit={handleSignUp}>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      placeholder="First Name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                    />
+                    <Input
+                      placeholder="Last Name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  {/* ... other form fields */}
+                </div>
+              </form>
             </TabsContent>
           </Tabs>
         </div>

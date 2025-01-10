@@ -24,6 +24,7 @@ import Marketplace from '@/pages/Marketplace';
 import Notifications from '@/pages/Notifications';
 import SavedListings from '@/pages/SavedListings';
 import VoiceMode from '@/pages/VoiceMode';
+import Settings from '@/pages/Settings';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -191,6 +192,16 @@ const AnimatedRoutes = () => {
           element={
             <ProtectedRoute>
               <Notifications />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Settings Route */}
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           }
         />

@@ -6,7 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { MainHeader } from "@/components/MainHeader";
 import { BottomNav } from "@/components/BottomNav";
 import { supabase } from "@/lib/supabase-client";
-import { useDealsStore } from "@/stores/use-deals-store";
+import { useDealStore } from "@/store/dealStore";
 
 interface DealForm {
   dealType: string;
@@ -19,7 +19,7 @@ const DealCreate = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const incrementDealCount = useDealsStore(state => state.incrementDealCount);
+  const { incrementDealsCount } = useDealStore();
 
   const [formData, setFormData] = useState<DealForm>({
     dealType: 'buy',
@@ -58,8 +58,8 @@ const DealCreate = () => {
 
       if (error) throw error;
 
-      // Increment the deal count in the store
-      incrementDealCount();
+      // Increment the deals count after successful creation
+      incrementDealsCount();
 
       toast({
         title: "Success",
