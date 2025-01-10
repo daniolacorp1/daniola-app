@@ -1,24 +1,24 @@
-import { Home, Store, HandshakeIcon, Bell, Settings, ChevronLeft, Menu } from "lucide-react";
+import { Home, Store, Handshake, Bell, Settings, ChevronLeft, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
+
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 const navigationItems = [
   { title: "Dashboard", icon: Home, path: "/dashboard" },
   { title: "Marketplace", icon: Store, path: "/marketplace" },
-  { title: "Deals", icon: HandshakeIcon, path: "/deals" },
+  { title: "Deals", icon: Handshake, path: "/deals" },
   { title: "Notifications", icon: Bell, path: "/notifications" },
   { title: "Settings", icon: Settings, path: "/settings" },
 ];
