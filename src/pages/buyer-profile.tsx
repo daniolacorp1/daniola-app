@@ -1,7 +1,7 @@
 // src/pages/buyer-profile.tsx
 import { ArrowLeft, ThumbsUp, ThumbsDown, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+
 
 const BuyerProfile = () => {
   const favoriteListings = [
