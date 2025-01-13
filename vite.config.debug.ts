@@ -1,23 +1,22 @@
-import { defineConfig } from 'vite';
+import { defineConfig, Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+const debugPlugin: Plugin = {
+  name: 'debug',
+  configResolved(config) {
+    console.log('Vite config resolved:', JSON.stringify(config, null, 2));
+  },
+  buildStart() {
+    console.log('Build starting...');
+  },
+  buildEnd() {
+    console.log('Build ended');
+  }
+};
+
 export default defineConfig({
-  plugins: [
-    react(),
-    {
-      name: 'debug',
-      configResolved(config) {
-        console.log('Vite config resolved:', JSON.stringify(config, null, 2));
-      },
-      buildStart() {
-        console.log('Build starting...');
-      },
-      buildEnd() {
-        console.log('Build ended');
-      },
-    },
-  ],
+  plugins: [react(), debugPlugin],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -26,7 +25,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    minify: false, // Disable minification for debugging
+    minify: false,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -37,8 +36,8 @@ export default defineConfig({
       }
     }
   },
-  logLevel: 'info', // Set to 'info' for more verbose logging
-  clearScreen: false, // Don't clear the screen
+  logLevel: 'info',
+  clearScreen: false,
   optimizeDeps: {
     entries: ['src/**/*.{ts,tsx}'],
     include: [
@@ -49,4 +48,4 @@ export default defineConfig({
       '@supabase/supabase-js'
     ]
   }
-}); 
+});

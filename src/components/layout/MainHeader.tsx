@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Bell, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/stores/use-auth-store';
+import { useAuthStore } from '@/stores/useauthstore';
 
 export function MainHeader() {
   const navigate = useNavigate();

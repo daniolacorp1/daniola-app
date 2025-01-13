@@ -1,14 +1,9 @@
 import { type Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
+import tailwindcssAnimatePlugin from "tailwindcss-animate";
 
 const config = {
   darkMode: ["class"],
-  content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-  ],
-  prefix: "",
   theme: {
     container: {
       center: true,
@@ -16,6 +11,14 @@ const config = {
       screens: {
         "2xl": "1400px",
       },
+    },
+    purge: {
+      content: [
+        './pages/**/*.{ts,tsx}',
+        './components/**/*.{ts,tsx}',
+        './app/**/*.{ts,tsx}',
+        './src/**/*.{ts,tsx}',
+      ],
     },
     extend: {
       colors: {
@@ -74,7 +77,8 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate, tailwindcssAnimatePlugin],
+  content: []
 } satisfies Config;
 
 export default config;

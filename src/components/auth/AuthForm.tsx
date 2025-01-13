@@ -1,10 +1,11 @@
+import React from 'react';
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/stores/use-auth-store";
+import { useAuthStore } from "@/stores/useauthstore";
 import { Eye, EyeOff } from "lucide-react";
 
 // Form Schema
