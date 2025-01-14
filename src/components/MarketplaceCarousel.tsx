@@ -1,3 +1,4 @@
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";

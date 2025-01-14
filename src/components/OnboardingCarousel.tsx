@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Store, HandshakeIcon } from "lucide-react";
+import { MessageSquare, Store, Handshake } from "lucide-react";
 
 const slides = [
   {
@@ -19,7 +19,7 @@ const slides = [
     title: "Deal Management",
     description:
       "Streamline your deal flow with our powerful tools. Track progress, manage documents, and close deals faster.",
-    Icon: HandshakeIcon,
+    Icon: Handshake,
   },
 ];
 

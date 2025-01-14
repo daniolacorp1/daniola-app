@@ -1,30 +1,29 @@
-import { render, screen } from 'vitest';
-import ActiveDeals from '../components/ActiveDeals';
+import { render } from '@testing-library/react';
+import { screen } from '@testing-library/dom';
+import ActiveDeals from './ActiveDeals';
+import { describe, it, expect } from 'vitest';
 
-test('renders ActiveDeals component', () => {
-  render(<ActiveDeals />);
-  const activeDealsElement = screen.getByTestId('active-deals');
-  expect(activeDealsElement).toBeInTheDocument();
-});
+describe('ActiveDeals', () => {
+  it('displays "No active deals" message when there are no active deals', () => {
+    const deals = [
+      { id: 1, name: 'Deal 1', isActive: false },
+      { id: 2, name: 'Deal 2', isActive: false },
+      { id: 3, name: 'Deal 3', isActive: false },
+    ];
+    // eslint-disable-next-line react/react-in-jsx-scope
+    render(<ActiveDeals deals={deals} />);
+    expect(screen.getByText('No active deals')).toBeInTheDocument();
+  });
 
-test('displays correct number of active deals', () => {
-  const deals = [
-    { id: 1, name: 'Deal 1', isActive: true },
-    { id: 2, name: 'Deal 2', isActive: true },
-    { id: 3, name: 'Deal 3', isActive: false },
-  ];
-  render(<ActiveDeals deals={deals} />);
-  const activeDealsElements = screen.getAllByTestId('active-deal');
-  expect(activeDealsElements.length).toBe(2);
-});
-
-test('displays "No active deals" message when there are no active deals', () => {
-  const deals = [
-    { id: 1, name: 'Deal 1', isActive: false },
-    { id: 2, name: 'Deal 2', isActive: false },
-    { id: 3, name: 'Deal 3', isActive: false },
-  ];
-  render(<ActiveDeals deals={deals} />);
-  const noActiveDealsElement = screen.getByText('No active deals');
-  expect(noActiveDealsElement).toBeInTheDocument();
+  it('displays active deals when present', () => {
+    const deals = [
+      { id: 1, name: 'Deal 1', isActive: true },
+      { id: 2, name: 'Deal 2', isActive: false },
+      { id: 3, name: 'Deal 3', isActive: true },
+    ];
+    render(<ActiveDeals deals={deals} />);
+    expect(screen.getByText('Deal 1')).toBeInTheDocument();
+    expect(screen.queryByText('Deal 2')).not.toBeInTheDocument();
+    expect(screen.getByText('Deal 3')).toBeInTheDocument();
+  });
 });

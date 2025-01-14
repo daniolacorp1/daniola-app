@@ -1,25 +1,37 @@
-import React, { FC } from 'react';
-// Remove if not used, or implement useAuthStore functionality
-// import { useAuthStore } from "@/stores/useauthstore";
+import React from 'react';
 
-// If you don't have any props, you can use empty interface instead of Record
-type ActiveListingsProps = object
+interface Deal {
+  id: number;
+  name: string;
+  isActive: boolean;
+}
 
-export const ActiveListings: FC<ActiveListingsProps> = () => {
+interface ActiveDealsProps {
+  deals?: Deal[];
+}
+
+const ActiveDeals: React.FC<ActiveDealsProps> = ({ deals = [] }) => {
+  const activeDeals = deals.filter(deal => deal.isActive);
+
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Active Listings</h2>
-      <div className="grid gap-4">
-        {/* Add your listings content here */}
-        <div className="p-4 border rounded-lg shadow-sm">
-          {/* Example listing item */}
-          <p>Your active listings will appear here</p>
+    <div data-testid="active-deals" className="space-y-4">
+      {activeDeals.length > 0 ? (
+        <div className="grid gap-4">
+          {activeDeals.map((deal) => (
+            <div
+              key={deal.id}
+              data-testid="active-deal"
+              className="p-4 border rounded-lg shadow-sm"
+            >
+              <h3 className="text-lg font-medium">{deal.name}</h3>
+            </div>
+          ))}
         </div>
-      </div>
+      ) : (
+        <p className="text-gray-500">No active deals</p>
+      )}
     </div>
   );
 };
 
-// Since you're already exporting the component with 'export const',
-// this default export is redundant. You can keep one or the other.
-export default ActiveListings;
+export default ActiveDeals;

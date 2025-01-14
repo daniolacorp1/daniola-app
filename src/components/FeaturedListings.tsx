@@ -64,3 +64,5 @@ const LoadingSkeleton = () => {
     </div>
   );
 };
+
+export default FeaturedListings;

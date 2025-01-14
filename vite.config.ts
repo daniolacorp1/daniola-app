@@ -3,9 +3,9 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 // Debug plugin definition
-const debugPlugin = {
+const debugPlugin: Plugin = {
   name: 'debug',
-  configResolved(config: import('vite').ResolvedConfig) {
+  configResolved(config) {
     console.log('Vite config resolved:', JSON.stringify(config, null, 2));
   },
   buildStart() {
@@ -14,7 +14,7 @@ const debugPlugin = {
   buildEnd() {
     console.log('Build ended');
   }
-} satisfies Plugin;
+};
 
 // Configuration
 export default defineConfig({

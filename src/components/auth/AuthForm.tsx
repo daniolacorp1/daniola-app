@@ -1,154 +1,57 @@
 import React from 'react';
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/stores/useauthstore";
-import { Eye, EyeOff } from "lucide-react";
 
-// Form Schema
-const formSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  full_name: z.string().optional(),
-  role: z.enum(["buyer", "supplier"]).optional(),
-  location: z.string().optional(),
-  bio: z.string().optional(),
-  commodities: z.string().optional(),
-});
+type AuthFormProps = object
 
-type FormData = z.infer<typeof formSchema>;
-
-interface AuthFormProps {
-  type: "sign-in" | "sign-up";
-}
-
-export function AuthForm({ type }: AuthFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
-  const { signIn, signUp, isLoading } = useAuthStore();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      full_name: "",
-      role: "buyer",
-      location: "",
-      bio: "",
-      commodities: "",
-    },
-  });
-
-  const onSubmit = async (data: FormData) => {
-    if (type === "sign-in") {
-      await signIn(data);
-    } else {
-      await signUp(data);
-    }
-  };
-
+const AuthForm: React.FC<AuthFormProps> = () => {
+  
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <Input
-          {...register("email")}
+    <form className="space-y-4">
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
           type="email"
-          placeholder="Email"
-          className="w-full"
+          id="email"
+          name="email"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         />
-        {errors.email && (
-          <p className="text-sm text-red-500">{errors.email.message}</p>
-        )}
       </div>
 
-      <div className="space-y-2">
-        <div className="relative">
-          <Input
-            {...register("password")}
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className="w-full pr-10"
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          Password
+        </label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <input
+            id="remember-me"
+            name="remember-me"
+            type="checkbox"
+            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
           />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2"
-          >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4 text-gray-500" />
-            ) : (
-              <Eye className="h-4 w-4 text-gray-500" />
-            )}
-          </button>
+          <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+            Remember me
+          </label>
         </div>
-        {errors.password && (
-          <p className="text-sm text-red-500">{errors.password.message}</p>
-        )}
+
+        <button
+          type="submit"
+          className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
+          Sign in
+        </button>
       </div>
-
-      {type === "sign-up" && (
-        <>
-          <div className="space-y-2">
-            <Input
-              {...register("full_name")}
-              placeholder="Full Name"
-              className="w-full"
-            />
-            {errors.full_name && (
-              <p className="text-sm text-red-500">{errors.full_name.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <select {...register("role")} className="w-full p-2 rounded border">
-              <option value="buyer">Buyer</option>
-              <option value="supplier">Supplier</option>
-            </select>
-            {errors.role && (
-              <p className="text-sm text-red-500">{errors.role.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Input
-              {...register("location")}
-              placeholder="Location"
-              className="w-full"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <textarea
-              {...register("bio")}
-              placeholder="Bio"
-              className="w-full p-2 rounded border"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Input
-              {...register("commodities")}
-              placeholder="Commodities (comma separated)"
-              className="w-full"
-            />
-          </div>
-        </>
-      )}
-
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={isLoading}
-      >
-        {isLoading ? "Loading..." : type === "sign-in" ? "Sign In" : "Sign Up"}
-      </Button>
     </form>
   );
-}
+};
+
+export default AuthForm;

@@ -1,8 +1,11 @@
-// src/components/SplashScreen.tsx
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-export const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
+interface SplashScreenProps {
+  onComplete: () => void;
+}
+
+export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -76,7 +79,7 @@ export const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
         transition={{ delay: 0.3 }}
         className="text-sm text-gray-600 mt-4 font-medium"
       >
-        Loading Today's Market...
+        Loading Today&apos;s Market...
       </motion.p>
     </motion.div>
   );
