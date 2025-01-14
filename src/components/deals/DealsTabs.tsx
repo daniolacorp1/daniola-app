@@ -1,67 +1,52 @@
-import { FC } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import * as React from "react";
+import { type FC, type ReactElement } from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
 
-interface DealsTabsProps {
-  children: React.ReactNode;
-  defaultValue?: string;
-}
-
-export const DealsTabs: FC<DealsTabsProps> = ({ children, defaultValue = "active" }) => {
+const DealsTabs: FC = (): ReactElement => {
   return (
-    <Tabs defaultValue={defaultValue} className="w-full">
-      <div className="relative px-4">
-        <ScrollArea className="w-full whitespace-nowrap">
-          <TabsList className="bg-transparent flex gap-3 w-max">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  className="rounded-full px-6 py-2 bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600"
-                >
-                  All <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <TabsTrigger 
-                    value="active"
-                    className="w-full text-left px-2 py-1.5 rounded-none"
-                  >
-                    All Deals
-                  </TabsTrigger>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <TabsTrigger 
-                    value="closed"
-                    className="w-full text-left px-2 py-1.5 rounded-none"
-                  >
-                    In Progress
-                  </TabsTrigger>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <TabsTrigger 
-                    value="pending"
-                    className="w-full text-left px-2 py-1.5 rounded-none"
-                  >
-                    Ready for Review
-                  </TabsTrigger>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TabsList>
-          <ScrollBar orientation="horizontal" className="h-2" />
-        </ScrollArea>
+    <Tabs defaultValue="all" className="w-full">
+      <div className="flex items-center justify-between">
+        <TabsList>
+          <TabsTrigger value="all" className="text-zinc-700">
+            <Button
+              className="text-sm font-medium"
+              variant="ghost"
+            >
+              All Deals
+              <div className="ml-2 rounded-sm bg-zinc-100 px-2 py-0.5 text-xs">
+                100
+              </div>
+            </Button>
+          </TabsTrigger>
+          
+          <TabsTrigger value="active" className="text-zinc-700">
+            <Button
+              className="text-sm font-medium"
+              variant="ghost"
+            >
+              Active
+              <div className="ml-2 rounded-sm bg-zinc-100 px-2 py-0.5 text-xs">
+                12
+              </div>
+            </Button>
+          </TabsTrigger>
+          
+          <TabsTrigger value="closed" className="text-zinc-700">
+            <Button
+              className="text-sm font-medium"
+              variant="ghost"
+            >
+              Closed
+              <div className="ml-2 rounded-sm bg-zinc-100 px-2 py-0.5 text-xs">
+                88
+              </div>
+            </Button>
+          </TabsTrigger>
+        </TabsList>
       </div>
-      {children}
     </Tabs>
   );
 };
+
+export default DealsTabs;

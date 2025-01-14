@@ -1,93 +1,74 @@
-import { 
-  Home, 
-  Store, 
-  FileText,
-  Bell, 
-  Settings, 
-
-  Menu 
+import React from "react";
+import {
+  LayoutDashboard,
+  Settings,
+  UserCircle,
+  Users,
+  // Removing unused Menu import
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+// Removing unused Button import since it's not being used
 import { cn } from "@/lib/utils";
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export function DealsSidebar({ className }: SidebarProps) {
+// Either use the interface by adding props to the component
+// or remove it if not needed
+const DealsSidebar: React.FC = () => {
   const navigate = useNavigate();
 
   const routes = [
     {
-      label: 'Home',
-      icon: Home,
-      href: '/',
+      icon: LayoutDashboard,
+      href: "/deals",
+      label: "Dashboard",
+      color: "text-sky-500",
     },
     {
-      label: 'Marketplace',
-      icon: Store,
-      href: '/marketplace',
+      icon: UserCircle,
+      href: "/deals/profile",
+      label: "Profile",
+      color: "text-violet-500",
     },
     {
-      label: 'Deals',
-      icon: FileText,
-      href: '/deals',
+      icon: Users,
+      href: "/deals/users",
+      label: "Users",
+      color: "text-pink-700",
     },
     {
-      label: 'Notifications',
-      icon: Bell,
-      href: '/notifications',
-    },
-    {
-      label: 'Settings',
       icon: Settings,
-      href: '/settings',
+      href: "/deals/settings",
+      label: "Settings",
+      color: "text-orange-700",
     },
   ];
 
+  const onNavigate = (url: string) => {
+    navigate(url);
+  };
+
   return (
-    <div className={cn("flex h-full", className)}>
-      <div className="hidden lg:flex flex-col space-y-4 w-[200px] bg-secondary/10 p-3">
+    <div className="flex h-full flex-col items-center space-y-4 bg-black py-4 text-white">
+      <div className="flex-1 space-y-4 overflow-y-auto pt-4">
         {routes.map((route) => (
           <div
             key={route.href}
-            onClick={() => navigate(route.href)}
-            className="text-muted-foreground text-xs group flex p-3 w-full justify-start cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition"
+            onClick={() => onNavigate(route.href)}
+            className="group flex w-full cursor-pointer flex-col items-center gap-y-2 px-2"
           >
-            <div className="flex items-center flex-1">
-              <route.icon className="h-5 w-5 mr-3" />
-              {route.label}
+            <div
+              className={cn(
+                "flex items-center justify-center rounded-lg p-2 transition hover:bg-white/10",
+                route.color
+              )}
+            >
+              <route.icon className="h-6 w-6" />
             </div>
+            <span className="text-xs font-medium">{route.label}</span>
           </div>
         ))}
       </div>
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="lg:hidden">
-            <Menu />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="p-0 bg-secondary/10">
-          <div className="flex flex-col space-y-4 p-3">
-            {routes.map((route) => (
-              <div
-                key={route.href}
-                onClick={() => navigate(route.href)}
-                className="text-muted-foreground text-xs group flex p-3 w-full justify-start cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition"
-              >
-                <div className="flex items-center flex-1">
-                  <route.icon className="h-5 w-5 mr-3" />
-                  {route.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </SheetContent>
-      </Sheet>
     </div>
   );
-}
+};
+
+export default DealsSidebar;

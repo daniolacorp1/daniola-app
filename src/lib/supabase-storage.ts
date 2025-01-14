@@ -8,7 +8,7 @@ export const uploadProfileImage = async (file: File, userId: string) => {
     const filePath = `${userId}/profile.${fileExt}`;
 
     // Upload the file to Supabase storage
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('profile-images')
       .upload(filePath, file, {
         upsert: true,

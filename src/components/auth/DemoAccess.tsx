@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronDown } from "lucide-react";
+import React from "react";
 
 interface DemoAccessProps {
   onDemoLogin: (role: 'buyer' | 'supplier') => Promise<void>;
