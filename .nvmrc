@@ -1,1 +1,2 @@
-14.17.0
+# .nvmrc
+18.17.0  # This version is compatible with npm 10
