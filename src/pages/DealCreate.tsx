@@ -6,7 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { MainHeader } from "@/components/MainHeader";
 import { BottomNav } from "@/components/BottomNav";
 import { supabase } from "@/lib/supabase-client";
-import { useDealStore } from "@/store/use-deals-store";
+import { useDealStore } from '@/stores/use-deals-store';
 
 interface DealForm {
   dealType: string;

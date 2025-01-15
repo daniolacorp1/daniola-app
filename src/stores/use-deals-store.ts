@@ -1,22 +1,29 @@
-// src/stores/use-deals-store.ts
+// src/stores/use-deals-store.ts (note: stores not store)
 import { create } from 'zustand';
-import type { Deal } from '../types/deal';
+import type { Deal } from '@/types';
 
-interface DealsStore {
+interface DealStore {
   deals: Deal[];
-  setDeals: (deals: Deal[]) => void;
-  addDeal: (deal: Deal) => void;
-  updateDeal: (id: number, updates: Partial<Deal>) => void;
+  dealsCount: number;
+  addDeal: (deal: Omit<Deal, 'id'>) => void;
+  removeDeal: (id: string) => void;
+  incrementDealsCount: () => void;
+  decrementDealsCount: () => void;
 }
 
-export const useDealsStore = create<DealsStore>((set) => ({
+export const useDealStore = create<DealStore>((set) => ({
   deals: [],
-  setDeals: (deals) => set({ deals }),
-  addDeal: (deal) => set((state) => ({ deals: [...state.deals, deal] })),
-  updateDeal: (id, updates) =>
-    set((state) => ({
-      deals: state.deals.map((deal) =>
-        deal.id === id ? { ...deal, ...updates } : deal
-      ),
-    })),
+  dealsCount: 0,
+  addDeal: (deal) => set((state) => ({
+    deals: [...state.deals, { ...deal, id: String(state.deals.length + 1) }]
+  })),
+  removeDeal: (id) => set((state) => ({
+    deals: state.deals.filter(d => d.id !== id)
+  })),
+  incrementDealsCount: () => set((state) => ({ 
+    dealsCount: state.dealsCount + 1 
+  })),
+  decrementDealsCount: () => set((state) => ({ 
+    dealsCount: state.dealsCount - 1 
+  })),
 }));

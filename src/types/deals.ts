@@ -1,4 +1,7 @@
-// src/types/index.ts
+// src/types/deals.ts
+import type { User } from './user';
+import type { Listing } from './listings';
+
 export type DealStatus = 'pending' | 'accepted' | 'rejected' | 'completed';
 
 export interface Deal {
@@ -24,34 +27,4 @@ export interface Deal {
   listing?: Listing;
   buyer?: User;
   supplier?: User;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  full_name?: string;
-  role?: 'buyer' | 'supplier';
-}
-
-export interface Listing {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  unit: string;
-  status: 'active' | 'inactive' | 'pending';
-  created_at: string;
-  supplier: {
-    id: string;
-    full_name: string;
-  };
-}
-
-export interface Profile {
-  id: string;
-  email: string;
-  full_name?: string;
-  avatar_url?: string;
-  bio?: string;
-  location?: string;
 }

@@ -1,4 +1,4 @@
-import { defineConfig, Plugin } from 'vite';
+import { defineConfig, optimizeDeps, Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
@@ -16,13 +16,13 @@ const debugPlugin: Plugin = {
 };
 
 export default defineConfig({
-  plugins: [react(), debugPlugin],
+  plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-  build: {
+      '@': path.resolve(__dirname, './src')
+    }
+},
+build: {
     outDir: 'dist',
     sourcemap: true,
     minify: false,
