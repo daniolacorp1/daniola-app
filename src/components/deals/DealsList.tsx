@@ -1,29 +1,29 @@
-import { DealCard } from "./DealCard";
+import DefaultIcon from './DefaultIcon';
+import { DealCard } from './DealCard';
 
-interface Deal {
-  id: number;
-  title: string;
-  status: string;
-  description: string;
-  image: string;
-  gradientColors?: string;
-}
+export const DealsList = () => {
+  const handleViewDeal = (id: number) => {
+    console.log(`Viewing deal with id: ${id}`);
+    // Your view deal logic
+  };
 
-interface DealsListProps {
-  deals: Deal[];
-  onViewDeal: (id: number) => void;
-}
-
-export const DealsList = ({ deals, onViewDeal }: DealsListProps) => {
   return (
-    <div className="space-y-4">
-      {deals.map((deal) => (
-        <DealCard
-          key={deal.id}
-          {...deal}
-          onViewDeal={onViewDeal}
-        />
-      ))}
+    <div>
+      <DealCard
+        id={1}
+        title="Example Deal"
+        status="Active"
+        description="Deal description"
+        image="/path/to/image.jpg"
+        icon={DefaultIcon}
+        iconBgColor="bg-blue-100"
+        iconColor="text-blue-600"
+        category="Technology"
+        price={100}       // Now TypeScript knows about this prop
+        discount={10}     // And this one
+        gradientColors="bg-gradient-to-r from-blue-500 to-blue-700"
+        onViewDeal={handleViewDeal}
+      />
     </div>
   );
 };

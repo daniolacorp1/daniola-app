@@ -1,185 +1,194 @@
 // src/pages/DealCreate.tsx
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { MainHeader } from "@/components/MainHeader";
-import { BottomNav } from "@/components/BottomNav";
-import { supabase } from "@/lib/supabase-client";
-import { useDealStore } from "@/store/dealStore";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useDealsStore } from '../stores/use-deals-store';
+import { useToast } from '../components/ui/use-toast';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../components/ui/form';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
+import { Textarea } from '../components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 
-interface DealForm {
-  dealType: string;
-  commodity: string;
-  quantity: number;
-  price: number;
-}
+const formSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  category: z.string().min(1, 'Category is required'),
+  value: z.string().min(1, 'Value is required'),
+  timeline: z.string().min(1, 'Timeline is required'),
+  status: z.string().default('draft'),
+});
 
-const DealCreate = () => {
+type FormValues = z.infer<typeof formSchema>;
+
+export const DealCreate = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { incrementDealsCount } = useDealStore();
+  const addDeal = useDealsStore((state) => state.addDeal);
 
-  const [formData, setFormData] = useState<DealForm>({
-    dealType: 'buy',
-    commodity: 'copper',
-    quantity: 0,
-    price: 0
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      category: '',
+      value: '',
+      timeline: '',
+      status: 'draft',
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [id]: id === 'quantity' || id === 'price' ? parseFloat(value) : value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
+  const onSubmit = async (values: FormValues) => {
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) throw new Error('No authenticated user');
-
-      const { error } = await supabase
-        .from('deals')
-        .insert({
-          user_id: userData.user.id,
-          type: formData.dealType,
-          commodity: formData.commodity,
-          quantity: formData.quantity,
-          price_per_unit: formData.price,
-          status: 'pending',
-          created_at: new Date().toISOString(),
-        });
-
-      if (error) throw error;
-
-      // Increment the deals count after successful creation
-      incrementDealsCount();
-
+      addDeal(values);
       toast({
-        title: "Success",
-        description: "Deal created successfully",
+        title: 'Success',
+        description: 'Deal created successfully',
       });
-      
-      navigate("/deals");
+      navigate('/deals');
     } catch (error) {
-      console.error('Error creating deal:', error);
       toast({
-        title: "Error",
-        description: "Failed to create deal",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to create deal',
+        variant: 'destructive',
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <MainHeader />
-      
-      <main className="container max-w-2xl mx-auto px-4 py-6 space-y-8">
-        <div className="space-y-4">
-          <h1 className="text-2xl font-bold text-gray-900">Create New Deal</h1>
-          <p className="text-gray-600">Fill in the details below to create a new deal</p>
+    <div className="container max-w-2xl py-10">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Create New Deal</h1>
+          <p className="text-muted-foreground">
+            Fill in the details to create a new deal
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4 rounded-lg border p-6 bg-white shadow-sm">
-            {/* Deal Type */}
-            <div className="space-y-2">
-              <label htmlFor="dealType" className="block text-sm font-medium text-gray-700">
-                Deal Type
-              </label>
-              <select
-                id="dealType"
-                value={formData.dealType}
-                onChange={handleChange}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-primary"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter deal title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter deal description"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="equipment">Equipment</SelectItem>
+                      <SelectItem value="service">Service</SelectItem>
+                      <SelectItem value="software">Software</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="value"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Value</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Enter deal value"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="timeline"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Timeline</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Enter timeline"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate('/deals')}
               >
-                <option value="buy">Buy</option>
-                <option value="sell">Sell</option>
-              </select>
+                Cancel
+              </Button>
+              <Button type="submit">Create Deal</Button>
             </div>
-
-            {/* Commodity */}
-            <div className="space-y-2">
-              <label htmlFor="commodity" className="block text-sm font-medium text-gray-700">
-                Commodity
-              </label>
-              <select
-                id="commodity"
-                value={formData.commodity}
-                onChange={handleChange}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-primary"
-              >
-                <option value="copper">Copper</option>
-                <option value="gold">Gold</option>
-                <option value="silver">Silver</option>
-              </select>
-            </div>
-
-            {/* Quantity */}
-            <div className="space-y-2">
-              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-                Quantity
-              </label>
-              <input
-                type="number"
-                id="quantity"
-                value={formData.quantity}
-                onChange={handleChange}
-                min="0"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-primary"
-                placeholder="Enter quantity"
-              />
-            </div>
-
-            {/* Price */}
-            <div className="space-y-2">
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                Price per unit
-              </label>
-              <input
-                type="number"
-                id="price"
-                value={formData.price}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-primary"
-                placeholder="Enter price per unit"
-              />
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate("/deals")}
-              className="w-full sm:w-auto"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="w-full sm:w-auto bg-[#FF4B4B] hover:bg-[#FF3333] text-white"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Creating..." : "Create Deal"}
-            </Button>
-          </div>
-        </form>
-      </main>
-      
-      <BottomNav />
+          </form>
+        </Form>
+      </div>
     </div>
   );
 };

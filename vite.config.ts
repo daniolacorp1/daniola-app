@@ -1,38 +1,12 @@
-import { defineConfig, Plugin } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
-// Debug plugin definition
-const debugPlugin: Plugin = {
-  name: 'debug',
-  configResolved(config) {
-    console.log('Vite config resolved:', JSON.stringify(config, null, 2));
-  },
-  buildStart() {
-    console.log('Build starting...');
-  },
-  buildEnd() {
-    console.log('Build ended');
-  }
-};
-
-// Configuration
 export default defineConfig({
-  plugins: [react(), debugPlugin],
+  plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@components': path.resolve(__dirname, './src/components'),
-      '@store': path.resolve(__dirname, './src/store'),
-    }
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'index.html'),
-      },
+      '@': path.resolve(__dirname, './src')
     }
   }
-});
+})

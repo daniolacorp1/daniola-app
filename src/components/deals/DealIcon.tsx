@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDealsStore } from '@/stores/use-deals-store';
+import { useDealsStore } from '@/stores/use-dealstore';
 import type { DealIconProps } from '@/types';
 
 export const DealIcon: React.FC<DealIconProps> = ({ icon: Icon, color }) => {

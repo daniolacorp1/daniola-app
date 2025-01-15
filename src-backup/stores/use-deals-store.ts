@@ -1,58 +1,40 @@
 // src/stores/use-deals-store.ts
-import create from 'zustand';
-import { supabase } from '@/lib/supabase';
-import type { DealType } from '@/types';
+import { create } from 'zustand';
 
-interface DealsState {
-  deals: DealType[];
-  dealCount: number;
-  activeDeals: number;
-  isLoading: boolean;
-  error: string | null;
-  decrementActiveDeals: () => void;
-  decrementDealCount: () => void;
-  fetchDeals: () => Promise<void>;
-  updateDealCount: () => Promise<void>;
-  incrementDealCount: () => void;
+interface Deal {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  category: string;
+  value: string;
+  timeline: string;
 }
 
-export const useDealsStore = create<DealsState>((set) => ({
+interface DealStore {
+  deals: Deal[];
+  addDeal: (deal: Omit<Deal, 'id'>) => void;
+  removeDeal: (id: number) => void;
+  updateDeal: (id: number, deal: Partial<Deal>) => void;
+}
+
+export const useDealsStore = create<DealStore>((set) => ({
   deals: [],
-  dealCount: 0,
-  isLoading: false,
-  error: null,
-  activeDeals: 0,
-  decrementActiveDeals: () => set(state => ({ activeDeals: state.activeDeals - 1 })),
-  decrementDealCount: () => set(state => ({ dealCount: state.dealCount - 1 })),
-  fetchDeals: async () => {
-    set({ isLoading: true });
-    try {
-      const { data, error } = await supabase
-        .from('deals')
-        .select('*')
-        .order('createdAt', { ascending: false });
-
-      if (error) throw error;
-      set({ deals: data || [], error: null });
-    } catch (error) {
-      set({ error: (error as Error).message });
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-  updateDealCount: async () => {
-    try {
-      const { count, error } = await supabase
-        .from('deals')
-        .select('*', { count: 'exact', head: true });
-
-      if (error) throw error;
-      set({ dealCount: count || 0 });
-    } catch (error) {
-      console.error('Error fetching deal count:', error);
-    }
-  },
-  incrementDealCount: () => {
-    set(state => ({ dealCount: state.dealCount + 1 }));
-  },
+  addDeal: (newDeal) =>
+    set((state) => ({
+      deals: [
+        ...state.deals,
+        { ...newDeal, id: state.deals.length + 1 }
+      ],
+    })),
+  removeDeal: (id) =>
+    set((state) => ({
+      deals: state.deals.filter((deal) => deal.id !== id),
+    })),
+  updateDeal: (id, updatedDeal) =>
+    set((state) => ({
+      deals: state.deals.map((deal) =>
+        deal.id === id ? { ...deal, ...updatedDeal } : deal
+      ),
+    })),
 }));

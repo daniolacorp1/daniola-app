@@ -1,4 +1,3 @@
-import * as React from "react";
 import { type FC, type ReactElement } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";

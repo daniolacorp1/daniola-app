@@ -1,242 +1,162 @@
 // src/pages/DealDetail.tsx
-import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, DollarSign, Building, Package, MapPin, FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { motion } from "framer-motion";
-import { useState } from "react";
-import { AcceptDealDialog } from "@/components/deals/AcceptDealDialog";
-import { useToast } from "@/components/ui/use-toast";
-import { useDealsStore } from '@/stores/use-deals-store';
-import { supabase } from '@/lib/supabase';
-import type { Deal } from '@/types';
+import React from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { useToast } from '../components/ui/use-toast';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
+import { supabase } from '../lib/supabase-client';
+import type { Deal } from '../types/deal';
+import { Badge } from 'lucide-react';
+// Removed local Deal interface declaration as it conflicts with the imported Deal type
 
-const DealDetail = () => {
+const DealDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const { toast } = useToast();
-  const { decrementActiveDeals, decrementDealCount } = useDealsStore();
+  const [deal, setDeal] = React.useState<Deal | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
-  // Mock data typed as Deal
-  const deal: Deal = {
-    id: Number(id),
-    title: "Copper Futures Contract",
-    status: "Ready for Review",
-    quantity: "5,000 lbs",
-    price: "$25,000",
-    image: "https://storage.googleapis.com/uxpilot-auth.appspot.com/6962245ea9-5d23bb22911b6d19d39d.png",
-    supplier: "Global Metals Corp",
-    deliveryDate: "2024-04-15",
-    description: "High-grade copper wire futures contract with delivery scheduled for Q2 2024. Price includes transportation and handling fees.",
-    terms: "Net 30 payment terms, FOB shipping point",
-    location: "Shanghai, China"
-  };
+  React.useEffect(() => {
+    const fetchDeal = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('deals')
+          .select('*')
+          .eq('id', id)
+          .single();
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'ready for review':
-        return 'text-yellow-600 bg-yellow-50';
-      case 'in progress':
-        return 'text-blue-600 bg-blue-50';
-      case 'accepted':
-        return 'text-green-600 bg-green-50';
-      default:
-        return 'text-gray-600 bg-gray-50';
-    }
-  };
+        if (error) throw error;
+        setDeal(data);
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to load deal details',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleNegotiate = () => {
-    // Store deal info in sessionStorage for chat context
-    sessionStorage.setItem('negotiationContext', JSON.stringify({
-      dealId: id,
-      title: deal.title,
-      price: deal.price,
-      supplier: deal.supplier,
-      quantity: deal.quantity
-    }));
+    fetchDeal();
+  }, [id]);
 
-    toast({
-      title: "Starting Negotiation",
-      description: "Opening chat with suggested negotiation points...",
-    });
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-    navigate('/chat');
-  };
-
-  const handleAcceptDeal = async () => {
-    try {
-      const { error } = await supabase
-        .from('deals')
-        .update({ status: 'accepted' })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      // Decrement both counters after accepting
-      decrementActiveDeals();
-      decrementDealCount();
-      
-      toast({
-        title: "Success",
-        description: "Deal accepted successfully",
-      });
-
-      // Navigate back to deals page after short delay
-      setTimeout(() => {
-        navigate('/deals');
-      }, 1500);
-    } catch (error) {
-      console.error('Error accepting deal:', error);
-      toast({
-        title: "Error",
-        description: "Failed to accept deal. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setShowAcceptDialog(false);
-    }
-  };
+  if (!deal) {
+    return <div>Deal not found</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="px-4 py-3 bg-white border-b flex items-center gap-3 sticky top-0 z-10">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate('/deals')}
-        >
-          <ArrowLeft className="h-5 w-5" />
+    <div className="container py-6">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold">{deal.title}</h1>
+          <Badge>{deal.status}</Badge>
+        </div>
+        <Button variant="outline" onClick={() => navigate('/deals')}>
+          Back to Deals
         </Button>
-        <h1 className="text-xl font-semibold">Deal Details</h1>
-      </header>
+      </div>
 
-      <main className="container mx-auto px-4 py-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Main Image and Title Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="md:col-span-2"
-          >
-            <Card className="overflow-hidden">
-              <div className="relative h-48 md:h-64">
-                <img 
-                  className="w-full h-full object-cover" 
-                  src={deal.image} 
-                  alt={deal.title} 
-                />
-                <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(deal.status)}`}>
-                  {deal.status}
-                </span>
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="updates">Updates</TabsTrigger>
+          <TabsTrigger value="tasks">Tasks</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview">
+          <Card>
+            <CardHeader>
+              <CardTitle>Deal Overview</CardTitle>
+              <CardDescription>Key information about the deal</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-medium">Category</h3>
+                  <p>{deal.category}</p>
+                </div>
+                <div>
+                  <h3 className="font-medium">Value</h3>
+                  <p>{deal.value}</p>
+                </div>
+                <div>
+                  <h3 className="font-medium">Timeline</h3>
+                  <p>{deal.timeline}</p>
+                </div>
+                <div>
+                  <h3 className="font-medium">Status</h3>
+                  <p>{deal.status}</p>
+                </div>
               </div>
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-semibold mb-4">{deal.title}</h2>
-                <p className="text-gray-600">{deal.description}</p>
-              </CardContent>
-            </Card>
-          </motion.div>
+              <div>
+                <h3 className="font-medium">Description</h3>
+                <p>{deal.description}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          {/* Key Details Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <Card>
-              <CardContent className="p-6 space-y-4">
-                <h3 className="text-lg font-semibold mb-4">Key Details</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-[#FF4B4B]" />
-                    <div>
-                      <p className="text-sm text-gray-500">Price</p>
-                      <p className="font-medium">{deal.price}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Package className="h-5 w-5 text-[#FF4B4B]" />
-                    <div>
-                      <p className="text-sm text-gray-500">Quantity</p>
-                      <p className="font-medium">{deal.quantity}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-[#FF4B4B]" />
-                    <div>
-                      <p className="text-sm text-gray-500">Delivery Date</p>
-                      <p className="font-medium">{deal.deliveryDate}</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+        <TabsContent value="documents">
+          <Card>
+            <CardHeader>
+              <CardTitle>Documents</CardTitle>
+              <CardDescription>Deal related documents</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {deal.documents?.length ? (
+                deal.documents.map((doc: any) => (
+                  <div key={doc.id}>{/* Document item */}</div>
+                ))
+              ) : (
+                <p>No documents available</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          {/* Supplier and Location Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card>
-              <CardContent className="p-6 space-y-4">
-                <h3 className="text-lg font-semibold mb-4">Supplier Information</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Building className="h-5 w-5 text-[#FF4B4B]" />
-                    <div>
-                      <p className="text-sm text-gray-500">Supplier</p>
-                      <p className="font-medium">{deal.supplier}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-[#FF4B4B]" />
-                    <div>
-                      <p className="text-sm text-gray-500">Location</p>
-                      <p className="font-medium">{deal.location}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-[#FF4B4B]" />
-                    <div>
-                      <p className="text-sm text-gray-500">Terms</p>
-                      <p className="font-medium">{deal.terms}</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+        <TabsContent value="updates">
+          <Card>
+            <CardHeader>
+              <CardTitle>Updates</CardTitle>
+              <CardDescription>Recent deal updates</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {deal.updates?.length ? (
+                deal.updates.map((update: any) => (
+                  <div key={update.id}>{/* Update item */}</div>
+                ))
+              ) : (
+                <p>No updates available</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-        {/* Action Buttons */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
-          <div className="container mx-auto flex gap-3 max-w-lg">
-            <Button 
-              variant="outline"
-              className="flex-1"
-              onClick={handleNegotiate}
-            >
-              Negotiate
-            </Button>
-            <Button 
-              className="flex-1 bg-[#FF4B4B] hover:bg-[#FF3333] text-white"
-              onClick={() => setShowAcceptDialog(true)}
-            >
-              Accept Deal
-            </Button>
-          </div>
-        </div>
-
-        <AcceptDealDialog
-          isOpen={showAcceptDialog}
-          onClose={() => setShowAcceptDialog(false)}
-          onConfirm={handleAcceptDeal}
-          dealTitle={deal.title}
-          dealAmount={deal.price}
-        />
-      </main>
+        <TabsContent value="tasks">
+          <Card>
+            <CardHeader>
+              <CardTitle>Tasks</CardTitle>
+              <CardDescription>Deal related tasks</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {deal.tasks?.length ? (
+                deal.tasks.map((task: any) => (
+                  <div key={task.id}>{/* Task item */}</div>
+                ))
+              ) : (
+                <p>No tasks available</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

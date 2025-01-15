@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { AcceptDealDialog } from "@/components/deals/AcceptDealDialog";
 import { useToast } from "@/components/ui/use-toast";
-import { useDealsStore } from '@/stores/use-deals-store';
+import { useDealsStore } from '@/stores/use-dealstore';
 import { supabase } from '@/lib/supabase';
 import type { Deal } from '@/types';
 

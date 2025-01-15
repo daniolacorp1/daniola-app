@@ -2,13 +2,11 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 
 interface DealsFilterProps {
-  filterButtons: string[];
   activeFilter: string;
   onFilterChange: (filter: string) => void;
 }
 
 export const DealsFilter = ({
-  filterButtons,
   activeFilter,
   onFilterChange,
 }: DealsFilterProps) => {
