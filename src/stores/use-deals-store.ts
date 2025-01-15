@@ -1,6 +1,8 @@
 // src/stores/use-deals-store.ts (note: stores not store)
+import { Deal } from '@/types/deals';
 import { create } from 'zustand';
-import type { Deal } from '@/types';
+// import { useDealStore } from '@/stores/use-deals-store';
+
 
 interface DealStore {
   deals: Deal[];

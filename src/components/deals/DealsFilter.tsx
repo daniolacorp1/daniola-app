@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 
+// src/components/deals/DealsFilter.tsx
 interface DealsFilterProps {
   activeFilter: string;
   onFilterChange: (filter: string) => void;

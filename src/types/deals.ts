@@ -1,8 +1,7 @@
-// src/types/deals.ts
-import type { User } from './user';
-import type { Listing } from './listings';
+import { User } from "@supabase/supabase-js";
 
-export type DealStatus = 'pending' | 'accepted' | 'rejected' | 'completed';
+// src/types/deal.ts
+export type DealStatus = 'pending' | 'accepted' | 'rejected' | 'completed' | 'Ready for Review';
 
 export interface Deal {
   id: string;
@@ -13,18 +12,13 @@ export interface Deal {
   value: string;
   timeline: string;
   category: string;
+  location?: string;
+  terms?: string;
+  deliveryDate?: string;
+  buyer: User;
   buyer_id: string;
   supplier_id: string;
   listing_id: string;
-  created_at: string;
-  updated_at: string;
   price: number;
   quantity: number;
-  total_amount: number;
-  documents?: any[];
-  updates?: any[];
-  tasks?: any[];
-  listing?: Listing;
-  buyer?: User;
-  supplier?: User;
 }

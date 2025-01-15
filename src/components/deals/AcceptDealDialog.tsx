@@ -10,12 +10,15 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
+// src/components/deals/AcceptDealDialog.tsx
 interface AcceptDealDialogProps {
   open: boolean;
+  onClose: () => void;
   onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
+  dealTitle: string;
+  dealAmount: number;
 }
-
 export const AcceptDealDialog: React.FC<AcceptDealDialogProps> = ({
   open,
   onOpenChange,
