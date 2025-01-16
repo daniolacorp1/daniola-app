@@ -22,3 +22,7 @@ export interface Deal {
   price: number;
   quantity: number;
 }
+export interface DealIconProps {
+    icon: React.ElementType;
+    iconColor: string;
+  }
