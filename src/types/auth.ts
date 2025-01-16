@@ -29,6 +29,7 @@ export interface UserProfile {
   updated_at?: string;
 }
 
+<<<<<<< HEAD
 // src/types/auth.ts
 export interface AuthError {
   message: string;
@@ -37,4 +38,10 @@ export interface AuthError {
 export interface AuthState {
   isAuthenticated: boolean;
   user: any; // Replace 'any' with your user type
+=======
+export interface AuthFormProps {
+  mode: string;
+  onSubmit: (values: AuthFormValues) => Promise<void>;
+  isLoading: boolean;
+>>>>>>> 719c7b49ba048f75b95de8609ca220e3d2c3b06c
 }

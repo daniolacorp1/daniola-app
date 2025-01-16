@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { MainHeader } from "@/components/MainHeader";
 import { FeaturedListings } from "@/components/FeaturedListings";
-import { ActiveDeals } from "@/components/ActiveDeals";
+import ActiveDeals from "@/components/ActiveDeals";
 import { BottomNav } from "@/components/BottomNav";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";

@@ -1,25 +1,30 @@
-import create from 'zustand';
+// src/stores/use-settings-store.ts
+import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface SettingsState {
   theme: 'light' | 'dark';
-  notifications: boolean;
+  sidebarOpen: boolean;
   toggleTheme: () => void;
-  toggleNotifications: () => void;
+  toggleSidebar: () => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
       theme: 'light',
-      notifications: true,
-      toggleTheme: () =>
-        set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
-      toggleNotifications: () =>
-        set((state) => ({ notifications: !state.notifications })),
+      sidebarOpen: true,
+      toggleTheme: () => 
+        set((state: SettingsState) => ({ 
+          theme: state.theme === 'light' ? 'dark' : 'light' 
+        })),
+      toggleSidebar: () => 
+        set((state: SettingsState) => ({ 
+          sidebarOpen: !state.sidebarOpen 
+        })),
     }),
     {
       name: 'settings-storage',
     }
   )
-); 
+);

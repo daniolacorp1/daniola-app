@@ -58,7 +58,7 @@ export const Register = () => {
 
           <div>
             <label className="text-sm font-medium">I am a</label>
-            <Select onValueChange={(value) => setUserType(value as 'supplier' | 'buyer')}>
+            <Select onValueChange={(value: string) => setUserType(value as 'supplier' | 'buyer')}>
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Select your role" />
               </SelectTrigger>

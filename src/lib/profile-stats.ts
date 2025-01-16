@@ -30,20 +30,20 @@ export const fetchProfileStats = async (userId: string, role: 'buyer' | 'supplie
 
     // Calculate stats
     const totalDeals = deals?.length || 0;
-    const averageValue = deals?.reduce((acc, deal) => acc + (deal.value || 0), 0) / totalDeals || 0;
-    const rating = ratings?.reduce((acc, r) => acc + r.rating, 0) / (ratings?.length || 1) || 0;
+    const averageValue = deals?.reduce((acc: number, deal: { value?: number }) => acc + (deal.value || 0), 0) / totalDeals || 0;
+    const rating = ratings?.reduce((acc: number, r: { rating: number }) => acc + r.rating, 0) / (ratings?.length || 1) || 0;
 
     if (role === 'buyer') {
       return {
         totalDeals,
-        totalPurchases: deals?.filter(d => d.status === 'completed').length || 0,
+        totalPurchases: deals?.filter((d: { status: string }) => d.status === 'completed').length || 0,
         averageValue,
         responseRate: 98, // You might want to calculate this based on actual response data
         rating,
       };
     } else {
       // Supplier specific calculations
-      const responseTime = deals?.reduce((acc, deal) => acc + (deal.response_time || 0), 0) / totalDeals || 0;
+      const responseTime = deals?.reduce((acc: number, deal: { response_time?: number }) => acc + (deal.response_time || 0), 0) / totalDeals || 0;
       
       return {
         totalDeals,

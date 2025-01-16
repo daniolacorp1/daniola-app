@@ -1,17 +1,44 @@
 import { LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
-
+// src/components/deals/DealCard.tsx
 interface DealCardProps {
+  id: number;
+  title: string;
+  status: string;
+  description: string;
+  image: string;
   icon: LucideIcon;
   iconBgColor: string;
   iconColor: string;
-  status: string;
-  title: string;
   category: string;
-  value: string;
-  timeline: string;
-  onClick: () => void;
+  price?: number;      // Added price as optional
+  discount?: number;   // Added discount as optional
+  value?: string;
+  gradientColors?: string;
+  timeline?: string;
+  onViewDeal: (id: number) => void;
+  onClick?: () => void;
 }
+
+
+interface DealCardProps {
+
+  id: number;
+
+  title: string;
+
+  status: string;
+
+  description: string;
+
+  image: string;
+
+  gradientColors?: string;
+
+  onViewDeal: (id: number) => void;
+
+}
+
 
 export const DealCard = ({
   icon: Icon,

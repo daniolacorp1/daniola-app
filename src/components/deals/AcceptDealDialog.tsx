@@ -1,3 +1,6 @@
+// src/components/deals/AcceptDealDialog.tsx
+import React from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -5,46 +8,38 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog';
 
+// src/components/deals/AcceptDealDialog.tsx
 interface AcceptDealDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => Promise<void>;
   dealTitle: string;
-  dealAmount: string;
+  dealAmount: number;
 }
-
-export function AcceptDealDialog({
-  isOpen,
-  onClose,
+export const AcceptDealDialog: React.FC<AcceptDealDialogProps> = ({
+  open,
+  onOpenChange,
   onConfirm,
-  dealTitle,
-  dealAmount,
-}: AcceptDealDialogProps) {
+}) => {
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Accept Deal</DialogTitle>
           <DialogDescription>
-            Are you sure you want to accept this deal?
+            Are you sure you want to accept this deal? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <p className="text-sm text-gray-500">Deal: {dealTitle}</p>
-          <p className="text-sm text-gray-500">Amount: {dealAmount}</p>
-        </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={onConfirm}>
-            Confirm
-          </Button>
+          <Button onClick={onConfirm}>Accept</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-}
+};

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 // Either use the interface by adding props to the component
 // or remove it if not needed
-const DealsSidebar: React.FC = () => {
+const DealsSidebar = () => {
   const navigate = useNavigate();
 
   const routes = [

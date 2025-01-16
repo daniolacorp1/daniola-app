@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Mic, Plus } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "../ui/input";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;

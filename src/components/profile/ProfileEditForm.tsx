@@ -39,7 +39,7 @@ const uploadProfileImage = async (file: File, userId: string) => {
     const fileExt = file.name.split('.').pop();
     const filePath = `${userId}/profile.${fileExt}`;
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('profile-images')
       .upload(filePath, file, {
         upsert: true,

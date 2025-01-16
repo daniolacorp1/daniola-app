@@ -1,6 +1,6 @@
 import React from "react";
 import { Mic, Plus } from "lucide-react";
-import { Avatar, AvatarImage, AvatarProps } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatInputProps {
   newMessage: string;

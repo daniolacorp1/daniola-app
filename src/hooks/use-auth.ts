@@ -2,7 +2,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import type { AuthError, AuthFormValues, AuthState } from '@/types/auth';
+import type { AuthFormValues } from '@/types/auth';
+
+interface AuthError {
+  message: string;
+  code?: string;
+}
+
+interface AuthState {
+  isLoading: boolean;
+  error: AuthError | null;
+  user: any | null;
+}
 
 export const useAuth = () => {
   const navigate = useNavigate();
@@ -17,8 +28,8 @@ export const useAuth = () => {
     checkSession();
 
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      async (event: string, session: any) => {
         setState(prev => ({ ...prev, isLoading: true }));
         
         if (event === 'SIGNED_IN' && session) {
@@ -31,7 +42,7 @@ export const useAuth = () => {
     );
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.subscription?.unsubscribe();
     };
   }, [navigate]);
 

@@ -7,19 +7,19 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { AcceptDealDialog } from "@/components/deals/AcceptDealDialog";
 import { useToast } from "@/components/ui/use-toast";
-import { useDealsStore } from '@/stores/use-deals-store';
+import { useDealStore } from '../stores/use-deals-store' 
 import { supabase } from '@/lib/supabase';
-import type { Deal } from '@/types';
+import type * as types from '..//types';
 
 const DealDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const { toast } = useToast();
-  const { decrementActiveDeals, decrementDealCount } = useDealsStore();
+  const dealStore = useDealStore();
 
   // Mock data typed as Deal
-  const deal: Deal = {
+  const deal = {
     id: Number(id),
     title: "Copper Futures Contract",
     status: "Ready for Review",
@@ -230,15 +230,25 @@ const DealDetail = () => {
         </div>
 
         <AcceptDealDialog
-          isOpen={showAcceptDialog}
+          open={showAcceptDialog}
           onClose={() => setShowAcceptDialog(false)}
           onConfirm={handleAcceptDeal}
           dealTitle={deal.title}
-          dealAmount={deal.price}
-        />
+          dealAmount={parseFloat(deal.price.replace(/[^0-9.-]+/g,""))} onOpenChange={function (open: boolean): void {
+            throw new Error("Function not implemented.");
+          } }        />
       </main>
     </div>
   );
 };
 
 export default DealDetail;
+
+function decrementActiveDeals() {
+  throw new Error("Function not implemented.");
+}
+
+
+function decrementDealCount() {
+  throw new Error("Function not implemented.");
+}
