@@ -1,0 +1,3 @@
+[submodule "daniola-app"]
+	path = daniola-app
+	url = https://github.com/daniolacorp1/daniola-app.git
