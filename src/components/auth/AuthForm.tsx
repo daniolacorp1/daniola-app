@@ -197,7 +197,7 @@ export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps) => {
                   <FormLabel>Commodities of Interest</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="e.g., Fresh produce, nuts, dairy"
+                      placeholder="e.g copper, manganese, graphite, lithium, tin, rare earth"
                       {...field}
                     />
                   </FormControl>
