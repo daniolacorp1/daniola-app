@@ -1,4 +1,0 @@
-# Create or edit .gitmodules file
-[submodule "daniola-app-1"]
-    path = daniola-app-1
-    url = https://github.com/daniolacorp1/daniola-app.git
