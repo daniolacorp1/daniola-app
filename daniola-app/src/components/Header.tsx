@@ -1,6 +1,6 @@
 import { Bell, Mic, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 import { Link, useNavigate } from "react-router-dom";
 
 export const Header = () => {
