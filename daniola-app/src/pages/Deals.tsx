@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
+<<<<<<< HEAD
 import DealsSidebar from "@/components/deals/DealsSidebar";
+=======
+import { DealsSidebar } from "@/components/deals/DealsSidebar";
+>>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
 import { DealsNavigation } from "@/components/deals/DealsNavigation";
 import { BottomNav } from "@/components/BottomNav";
 import { DealsFilter } from "@/components/deals/DealsFilter";

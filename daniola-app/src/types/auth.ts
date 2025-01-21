@@ -1,4 +1,5 @@
 // src/types/auth.ts
+<<<<<<< HEAD
 
 export type AuthMode = 'login' | 'signup';
 
@@ -44,4 +45,21 @@ export interface AuthFormProps {
   onSubmit: (values: AuthFormValues) => Promise<void>;
   isLoading: boolean;
 >>>>>>> 719c7b49ba048f75b95de8609ca220e3d2c3b06c
+=======
+import { LucideIcon } from "lucide-react";
+
+export interface Deal {
+    id: string;
+    title: string;
+    description: string;
+    status: string;
+    createdAt: Date;
+    image: string;
+    icon?: LucideIcon;
+    iconBgColor?: string;
+    iconColor?: string;
+    category: string;
+    value?: string;
+    timeline?: string;
+>>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
 }

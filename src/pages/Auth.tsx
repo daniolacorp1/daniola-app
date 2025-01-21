@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthForm } from '@/components/auth/AuthForm';
-import { AuthFormValues } from '@/types/auth';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,7 +11,12 @@ export const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = async (values: AuthFormValues) => {
+  interface AuthValues {
+    email: string;
+    password: string;
+  }
+
+  const handleSubmit = async (values: AuthValues) => {
     setIsLoading(true);
     try {
       // Your authentication logic here

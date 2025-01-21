@@ -1,5 +1,9 @@
 import { LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
+<<<<<<< HEAD
+=======
+// src/components/deals/DealCard.tsx
+>>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
 interface DealCardProps {
   id: number;
   title: string;
@@ -39,6 +43,7 @@ interface DealCardProps {
 }
 
 
+<<<<<<< HEAD
 /**
  * Component representing a deal card.
  *
@@ -55,6 +60,8 @@ interface DealCardProps {
  * @param {function} props.onClick - The function to be called when the card is clicked.
  * @returns {JSX.Element} The rendered deal card component.
  */
+=======
+>>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
 export const DealCard = ({
   icon: Icon,
   iconBgColor,
@@ -65,7 +72,11 @@ export const DealCard = ({
   value,
   timeline,
   onClick,
+<<<<<<< HEAD
 }: DealCardProps): JSX.Element => {
+=======
+}: DealCardProps) => {
+>>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
   return (
     <Card
       className="p-4 cursor-pointer hover:shadow-md transition-shadow"

@@ -1,9 +1,10 @@
+// src/pages/Deals.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { DealsSidebar } from "@/components/deals/DealsSidebar";
+import DealsSidebar from "@/components/deals/DealsSidebar";
 import { DealsNavigation } from "@/components/deals/DealsNavigation";
 import { BottomNav } from "@/components/BottomNav";
 import { DealsFilter } from "@/components/deals/DealsFilter";
@@ -14,7 +15,7 @@ const Deals = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState("All");
-  const filterButtons = ["Pending", "Closed"];
+  const filterButtons = ["In Progress", "Ready for Review"];
 
   const deals = [
     {
@@ -25,21 +26,7 @@ const Deals = () => {
       image: "/lovable-uploads/446ff33f-5bb5-4d34-b518-fa3221b18987.png",
       gradientColors: "from-gray-900 to-orange-600",
     },
-    {
-      id: 2,
-      title: "Gold Futures",
-      status: "In Progress",
-      description: "Gold 1000 oz",
-      image: "/lovable-uploads/c338740b-f911-431c-8cdc-9447a84e7d6d.png",
-      gradientColors: "from-gray-800 via-yellow-500 to-gray-900",
-    },
-    {
-      id: 3,
-      title: "Oil Futures",
-      status: "Accepted",
-      description: "Oil 1000 barrels",
-      image: "/lovable-uploads/a3674f5d-5e86-46b8-8cd8-8a34cdbe1fd7.png",
-    },
+    // ... your other deals
   ];
 
   const handleViewDeal = (id: number) => {
