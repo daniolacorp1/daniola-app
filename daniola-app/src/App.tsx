@@ -38,33 +38,29 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        setIsAuthenticated(!!session);
-      } catch (error) {
-        console.error('Auth check error:', error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
-      }
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+      setIsLoading(false);
     };
 
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
+      if (!session && !isLoading) {
+        setIsAuthenticated(false);
+      } else if (session) {
+        setIsAuthenticated(true);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
+  if (isLoading) return <Loading />;
+  
   if (!isAuthenticated) {
-    return <Navigate to="/" state={{ from: location }} replace />;
+    // Store the attempted path to redirect back after login
+    return <Navigate to="/" state={{ from: location.pathname }} replace />;
   }
 
   return <>{children}</>;
@@ -228,11 +224,11 @@ function App() {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsInitialized(true);
-      if (session) {
+      // Only show splash screen on initial load, not on every session
+      if (!showSplash) {
         setShowSplash(true);
       }
     };
-
     checkSession();
   }, []);
 
