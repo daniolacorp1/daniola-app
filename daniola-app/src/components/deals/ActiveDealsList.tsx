@@ -132,14 +132,8 @@ export const ActiveDealsList = () => {
           category={deal.category}
           value={deal.value}
           timeline={deal.timeline}
-<<<<<<< HEAD
-          onClick={() => handleDealClick(deal)} id={0} description={""} image={""} onViewDeal={function (id: number): void {
-            throw new Error("Function not implemented.");
-          } }        />
-=======
-          onClick={() => handleDealClick(deal)}
-        />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
+  onClick={() => handleDealClick(deal)}
+/>
       ))}
     </>
   );

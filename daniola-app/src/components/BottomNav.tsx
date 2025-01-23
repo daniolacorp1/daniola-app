@@ -8,11 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import Deals from "../../public/icon/deals.svg";
 import Marketplace from "../../public/icon/marketplace.svg";
 import Voice from "../../public/icon/voice.svg";
-<<<<<<< HEAD
 //import { useDealStore } from '../../stores/use-deals-store';
-=======
-import { useDealStore } from '@/store/dealStore';
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
 import { useEffect } from 'react';
 
 // Define a type for nav items
@@ -115,7 +111,6 @@ export const BottomNav = () => {
 };
 
 export default BottomNav;
-<<<<<<< HEAD
 import { useState } from 'react';
 
 function useDealStore() {
@@ -139,5 +134,3 @@ function useDealStore() {
   return { activeDealsCount, fetchActiveDeals };
 }
 
-=======
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765

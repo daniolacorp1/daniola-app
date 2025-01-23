@@ -1,53 +1,3 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-
-// Define the DealDetail type
-interface DealDetail {
-  id: number;
-  name: string;
-  price: number;
-  category: string;
-  description: string;
-  location: string;
-  supplier: string;
-  certification: string;
-  image: string;
-  stock: number;
-  rating: number;
-  priceChange: number;
-  quantity: number;
-  quantityChange: number;
-  _price: string;
-  status: string;
-}
-
-// Ensure commodities is correctly typed
-const commodities: DealDetail[] = [
-  {
-    id: 1,
-    name: "Commodity 1",
-    price: 100,
-    category: "Category 1",
-    description: "Description 1",
-    location: "Location 1",
-    supplier: "Supplier 1",
-    certification: "Certification 1",
-    image: "/path/to/image1.jpg",
-    stock: 100,
-    rating: 4.5,
-    priceChange: 0.5,
-    quantity: 50,
-    quantityChange: 1,
-    _price: "100",
-    status: "Ready for Review"
-  },
-  // Add more commodities as needed
-];
-
-const DealDetailView: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-=======
 // src/pages/DealDetailView.tsx
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -69,7 +19,6 @@ interface DealDetail {
 const DealDetailView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
   const [deal, setDeal] = useState<DealDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -79,10 +28,7 @@ const DealDetailView = () => {
     if (dealData) {
       setDeal({
         ...dealData,
-<<<<<<< HEAD
         _price: dealData.price.toString(),
-=======
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
         status: "Ready for Review"
       });
     }
@@ -98,14 +44,6 @@ const DealDetailView = () => {
   }
 
   return (
-<<<<<<< HEAD
-    <div>
-      <h1>{deal.name}</h1>
-      <p>{deal.description}</p>
-      <p>Price: {deal._price}</p>
-      <p>Status: {deal.status}</p>
-      {/* Add more deal details as needed */}
-=======
     <div className="min-h-screen bg-background">
       <MainHeader />
       
@@ -157,14 +95,8 @@ const DealDetailView = () => {
       </main>
       
       <BottomNav />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
     </div>
   );
 };
 
-<<<<<<< HEAD
 export default DealDetailView;
-
-=======
-export default DealDetailView;
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765

@@ -10,10 +10,6 @@ import { Commodity } from "@/types/marketplace";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { MainHeader } from "@/components/MainHeader";
-<<<<<<< HEAD
-import React, { Component } from 'react';
-=======
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
 
 const Marketplace = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,23 +21,6 @@ const Marketplace = () => {
   const navigate = useNavigate();
 
   const filteredCommodities = commodities.filter((commodity) => {
-<<<<<<< HEAD
-    // Safely handle potentially undefined values using nullish coalescing
-    const commodityName = commodity.name?.toLowerCase() ?? '';
-    const commodityLocation = commodity.location?.toLowerCase() ?? '';
-    const supplierName = commodity.supplier?.name?.toLowerCase() ?? '';
-    const searchQueryLower = searchQuery.toLowerCase();
-  
-    const matchesSearch = 
-      commodityName.includes(searchQueryLower) ||
-      commodityLocation.includes(searchQueryLower) ||
-      supplierName.includes(searchQueryLower);
-  
-    const matchesFilter = 
-      selectedFilter === "All" || 
-      commodityName.includes(selectedFilter.toLowerCase());
-  
-=======
     const matchesSearch =
       commodity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       commodity.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -50,7 +29,6 @@ const Marketplace = () => {
     const matchesFilter =
       selectedFilter === "All" || commodity.name.includes(selectedFilter);
 
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
     return matchesSearch && matchesFilter;
   });
 
@@ -110,7 +88,6 @@ const Marketplace = () => {
 };
 
 export default Marketplace;
-<<<<<<< HEAD
 
 interface MyComponentProps {
   initialCount: number;
@@ -157,5 +134,3 @@ class MyComponent extends Component<MyComponentProps, MyComponentState> {
 }
 
 export { MyComponent };
-=======
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765

@@ -1,17 +1,12 @@
 import { Wrench, Factory, Package, Building, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-import { useToast } from "@/hooks/use-toast";
-=======
 import { useToast } from "@/components/ui/use-toast";
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
 import { DealCard } from "./DealCard";
 
 export const ClosedDealsList = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-<<<<<<< HEAD
   const handleViewDeal = (id: number) => {
     navigate(`/deals/${id}`);
     toast({
@@ -20,8 +15,6 @@ export const ClosedDealsList = () => {
     });
   };
 
-=======
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
   return (
     <>
       <DealCard
@@ -33,24 +26,12 @@ export const ClosedDealsList = () => {
         category="Service Contract"
         value="$8,500"
         timeline="Completed"
-<<<<<<< HEAD
         id={4}
         description="Equipment maintenance service contract"
         image="/path/to/image"
         onViewDeal={handleViewDeal}
         onClick={() => handleViewDeal(4)}
       />
-      {/* Repeat similar changes for other DealCard components */}
-=======
-        onClick={() => {
-          navigate("/deals/4");
-          toast({
-            title: "Opening Completed Deal",
-            description: "Loading deal details...",
-          });
-        }}
-      />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
       <DealCard
         icon={Factory}
         iconBgColor="bg-slate-50"
@@ -60,22 +41,11 @@ export const ClosedDealsList = () => {
         category="Infrastructure"
         value="$250,000"
         timeline="Completed"
-<<<<<<< HEAD
         id={8}
         description="Factory infrastructure setup"
         image="/path/to/image"
         onViewDeal={handleViewDeal}
         onClick={() => handleViewDeal(8)}
-      />
-      {/* ... other cards similarly updated */}
-=======
-        onClick={() => {
-          navigate("/deals/8");
-          toast({
-            title: "Opening Factory Setup Deal",
-            description: "Loading setup details...",
-          });
-        }}
       />
       <DealCard
         icon={Wrench}
@@ -145,7 +115,6 @@ export const ClosedDealsList = () => {
           });
         }}
       />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
     </>
   );
 };

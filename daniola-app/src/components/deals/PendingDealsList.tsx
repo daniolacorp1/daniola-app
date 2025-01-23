@@ -24,14 +24,9 @@ export const PendingDealsList = () => {
             title: "Opening Pending Deal",
             description: "Loading deal details...",
           });
-<<<<<<< HEAD
         } } id={0} description={""} image={""} onViewDeal={function (id: number): void {
           throw new Error("Function not implemented.");
         } }      />
-=======
-        }}
-      />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
       <DealCard
         icon={Briefcase}
         iconBgColor="bg-orange-50"
@@ -47,14 +42,8 @@ export const PendingDealsList = () => {
             title: "Opening Consulting Contract",
             description: "Loading contract details...",
           });
-<<<<<<< HEAD
-        } } id={0} description={""} image={""} onViewDeal={function (id: number): void {
-          throw new Error("Function not implemented.");
-        } }      />
-=======
         }}
       />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
       <DealCard
         icon={Shield}
         iconBgColor="bg-cyan-50"
@@ -70,14 +59,8 @@ export const PendingDealsList = () => {
             title: "Opening Security System Deal",
             description: "Loading system details...",
           });
-<<<<<<< HEAD
-        } } id={0} description={""} image={""} onViewDeal={function (id: number): void {
-          throw new Error("Function not implemented.");
-        } }      />
-=======
         }}
       />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
       <DealCard
         icon={Warehouse}
         iconBgColor="bg-rose-50"
@@ -93,14 +76,8 @@ export const PendingDealsList = () => {
             title: "Opening Storage Facility Deal",
             description: "Loading facility details...",
           });
-<<<<<<< HEAD
-        } } id={0} description={""} image={""} onViewDeal={function (id: number): void {
-          throw new Error("Function not implemented.");
-        } }      />
-=======
         }}
       />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
       <DealCard
         icon={Building}
         iconBgColor="bg-violet-50"
@@ -116,14 +93,8 @@ export const PendingDealsList = () => {
             title: "Opening Distribution Center Deal",
             description: "Loading center details...",
           });
-<<<<<<< HEAD
-        } } id={0} description={""} image={""} onViewDeal={function (id: number): void {
-          throw new Error("Function not implemented.");
-        } }      />
-=======
         }}
       />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
       <DealCard
         icon={Factory}
         iconBgColor="bg-emerald-50"
@@ -139,14 +110,8 @@ export const PendingDealsList = () => {
             title: "Opening Production Line Deal",
             description: "Loading setup details...",
           });
-<<<<<<< HEAD
-        } } id={0} description={""} image={""} onViewDeal={function (id: number): void {
-          throw new Error("Function not implemented.");
-        } }      />
-=======
         }}
       />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
       <DealCard
         icon={Wrench}
         iconBgColor="bg-indigo-50"
@@ -162,14 +127,8 @@ export const PendingDealsList = () => {
             title: "Opening Machinery Upgrade Deal",
             description: "Loading upgrade details...",
           });
-<<<<<<< HEAD
-        } } id={0} description={""} image={""} onViewDeal={function (id: number): void {
-          throw new Error("Function not implemented.");
-        } }      />
-=======
         }}
       />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
     </>
   );
 };
