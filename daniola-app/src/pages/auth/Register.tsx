@@ -82,7 +82,7 @@ export const Register = () => {
             <label className="text-sm font-medium">Commodities of Interest</label>
             <Input 
               type="text" 
-              placeholder="e.g., Fresh produce, nuts, dairy"
+              placeholder="e.g., oil, copper, gold, silver."
               className="mt-1"
             />
           </div>
