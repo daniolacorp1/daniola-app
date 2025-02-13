@@ -1,5 +1,6 @@
-<<<<<<< HEAD
 import React from 'react';
+import DefaultIcon from './DefaultIcon';
+import { DealCard } from './DealCard';
 
 interface Deal {
   id: number;
@@ -7,6 +8,9 @@ interface Deal {
   status: string;
   description: string;
   image: string;
+  category: string;
+  price: number;
+  discount: number;
   gradientColors?: string;
 }
 
@@ -17,40 +21,17 @@ interface DealsListProps {
 
 export const DealsList: React.FC<DealsListProps> = ({ deals, onViewDeal }) => {
   return (
-    <div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {deals.map((deal) => (
-        <button key={deal.id} onClick={() => onViewDeal(deal.id)}>
-          <h2>{deal.title}</h2>
-        </button>
+        <DealCard
+          key={deal.id}
+          {...deal}
+          icon={DefaultIcon}
+          iconBgColor="bg-blue-100"
+          iconColor="text-blue-600"
+          onViewDeal={onViewDeal}
+        />
       ))}
-=======
-import DefaultIcon from './DefaultIcon';
-import { DealCard } from './DealCard';
-
-export const DealsList = () => {
-  const handleViewDeal = (id: number) => {
-    console.log(`Viewing deal with id: ${id}`);
-    // Your view deal logic
-  };
-
-  return (
-    <div>
-      <DealCard
-        id={1}
-        title="Example Deal"
-        status="Active"
-        description="Deal description"
-        image="/path/to/image.jpg"
-        icon={DefaultIcon}
-        iconBgColor="bg-blue-100"
-        iconColor="text-blue-600"
-        category="Technology"
-        price={100}       // Now TypeScript knows about this prop
-        discount={10}     // And this one
-        gradientColors="bg-gradient-to-r from-blue-500 to-blue-700"
-        onViewDeal={handleViewDeal}
-      />
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
     </div>
   );
 };

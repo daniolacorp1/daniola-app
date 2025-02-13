@@ -1,81 +1,56 @@
-import { LucideIcon } from "lucide-react";
-import { Card } from "@/components/ui/card";
-// src/components/deals/DealCard.tsx
+import React from 'react';
+
 interface DealCardProps {
   id: number;
   title: string;
   status: string;
   description: string;
   image: string;
-  icon: LucideIcon;
+  icon: React.FC<{ className?: string }>;
   iconBgColor: string;
   iconColor: string;
   category: string;
-  price?: number;      // Added price as optional
-  discount?: number;   // Added discount as optional
-  value?: string;
+  price: number;
+  discount: number;
   gradientColors?: string;
-  timeline?: string;
   onViewDeal: (id: number) => void;
-  onClick?: () => void;
 }
 
-
-interface DealCardProps {
-
-  id: number;
-
-  title: string;
-
-  status: string;
-
-  description: string;
-
-  image: string;
-
-  gradientColors?: string;
-
-  onViewDeal: (id: number) => void;
-
-}
-
-
-export const DealCard = ({
-  icon: Icon,
+export const DealCard: React.FC<DealCardProps> = ({
+  id,
+  title,
+  status,
+  description,
+  image,
+  icon,
   iconBgColor,
   iconColor,
-  status,
-  title,
   category,
-  value,
-  timeline,
-  onClick,
-}: DealCardProps) => {
+  price,
+  discount,
+  gradientColors,
+  onViewDeal,
+}) => {
   return (
-    <Card
-      className="p-4 cursor-pointer hover:shadow-md transition-shadow"
-      onClick={onClick}
-    >
-      <div className="flex items-start gap-4">
-        <div className={`p-2 rounded-lg ${iconBgColor}`}>
-          <Icon className={`h-5 w-5 ${iconColor}`} />
-        </div>
-        <div className="flex-1">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="font-medium">{title}</h3>
-              <p className="text-sm text-gray-600">{category}</p>
-            </div>
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
-              {status}
-            </span>
-          </div>
-          <div className="mt-2 flex justify-between text-sm">
-            <span className="font-medium">{value}</span>
-            <span className="text-gray-500">{timeline}</span>
-          </div>
-        </div>
+    <div className={`p-4 rounded-lg ${gradientColors}`} onClick={() => onViewDeal(id)}>
+      {image && (
+        <img src={image} alt={title} className="w-full h-32 object-cover rounded-lg mb-4" />
+      )}
+      <div className={`p-2 rounded-full ${iconBgColor} w-10 h-10 flex items-center justify-center`}>
+        {React.createElement(icon, { className: `w-6 h-6 ${iconColor}` })}
       </div>
-    </Card>
+      <h2 className="text-xl font-bold mt-2">{title}</h2>
+      <p className="text-sm">{description}</p>
+      <div className="mt-2">
+        <span className="text-sm">{category}</span>
+        <span className="text-sm ml-2">{status}</span>
+      </div>
+      <div className="mt-2">
+        <span className="text-lg font-bold">${price - discount}</span>
+        {discount > 0 && (
+          <span className="text-sm line-through ml-2">${price}</span>
+        )}
+      </div>
+    </div>
   );
 };

@@ -1,23 +1,3 @@
-// src/types/index.ts
-<<<<<<< HEAD
-import { LucideIcon } from "lucide-react";
-
-export interface DealIconProps {
-  id: number;
-  title: string;
-  status: string;
-  description: string;
-  image: string;
-  icon?: LucideIcon;
-  iconBgColor?: string;
-  iconColor?: string;
-  category: string;
-  value?: string;
-  timeline?: string;
-  onClick?: () => void;
-  onViewDeal?: (id: number) => void;
-=======
-
 import { LucideIcon } from "lucide-react";
 
 export interface DealCardProps {
@@ -61,5 +41,4 @@ export interface Deal extends DealBase {
 export interface DealCard extends DealBase {
     onClick?: () => void;
     onViewDeal?: (id: number) => void;
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
 }

@@ -3,11 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
-<<<<<<< HEAD
 import DealsSidebar from "@/components/deals/DealsSidebar";
-=======
-import { DealsSidebar } from "@/components/deals/DealsSidebar";
->>>>>>> 92be504d21e39cfb7ce9120353d547b3197f8765
 import { DealsNavigation } from "@/components/deals/DealsNavigation";
 import { BottomNav } from "@/components/BottomNav";
 import { DealsFilter } from "@/components/deals/DealsFilter";
@@ -27,6 +23,9 @@ const Deals = () => {
       status: "Ready for Review",
       description: "Copper 1000 lbs",
       image: "/lovable-uploads/446ff33f-5bb5-4d34-b518-fa3221b18987.png",
+      category: "Metals",
+      price: 1000,
+      discount: 50,
       gradientColors: "from-gray-900 to-orange-600",
     },
     {
@@ -35,6 +34,9 @@ const Deals = () => {
       status: "In Progress",
       description: "Gold 1000 oz",
       image: "/lovable-uploads/c338740b-f911-431c-8cdc-9447a84e7d6d.png",
+      category: "Metals",
+      price: 2000,
+      discount: 100,
       gradientColors: "from-gray-800 via-yellow-500 to-gray-900",
     },
     {
@@ -43,6 +45,10 @@ const Deals = () => {
       status: "Accepted",
       description: "Oil 1000 barrels",
       image: "/lovable-uploads/a3674f5d-5e86-46b8-8cd8-8a34cdbe1fd7.png",
+      category: "Energy",
+      price: 1500,
+      discount: 0,
+      gradientColors: "from-gray-800 to-gray-900",
     },
   ];
 
